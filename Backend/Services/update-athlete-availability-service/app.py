@@ -4,6 +4,7 @@ import services
 
 app = Flask(__name__)
 
+#for request format see readme
 @app.route("/update-athlete-availability", methods=['POST'])
 def update_availability():
     if request.method == 'POST':

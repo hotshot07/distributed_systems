@@ -1,4 +1,5 @@
-import re
+import datetime
+from sqlite3 import DataError
 import boto3
 from botocore.exceptions import ClientError
 
@@ -6,6 +7,7 @@ import settings
 
 #TODO: Insert Correct times
 #TODO: More error handling
+#TODO: make updates atomic
 
 
 #Create Resource
@@ -36,12 +38,18 @@ def put_item(country, athlete_id, dynamo):
             #handle this
             print(e.response['Error']['Message'])
     else:
-        return response['Item']
+        return response
 
 
 #UPDATE
 def update_item(country, athlete_id, item, dynamo):
     table = dynamo.Table(settings.ATHLETE_AVAILABILITY_TABLE)
+
+    date_time = datetime.datetime.fromisoformat(item['datetimeUTC'])
+    location = item['location']
+
+    date_attribute = date_time.date().isoformat()
+    date_time_attribute = date_time.isoformat()
 
     try:
         response = table.update_item(
@@ -49,9 +57,15 @@ def update_item(country, athlete_id, item, dynamo):
                 'athlete_country': country,
                 'athlete_id': athlete_id
             },
-            UpdateExpression='set availability.{}=:loc'.format(item['date']),
+            UpdateExpression='set availability.#attrName = :item',
+            ExpressionAttributeNames={
+                '#attrName' : date_attribute
+            },
             ExpressionAttributeValues={
-                ':loc' : item['location']
+                ':item' : {
+                    'date_time' : date_time_attribute,
+                    'location': location
+                }
             },
             ReturnValues="ALL_NEW"
         )
