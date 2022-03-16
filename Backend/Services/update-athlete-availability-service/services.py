@@ -2,48 +2,26 @@ import datetime
 import boto3
 from botocore.exceptions import ClientError
 
-import settings
+from settings import *
 
 #TODO: More error handling
-
 
 #Create Resource
 def connect():
     dynamo_resource = boto3.resource(
         'dynamodb',
-        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-        region_name=settings.REGION_NAME
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+        region_name=REGION_NAME
         )
     return dynamo_resource
 
 
-#PUT
-def put_item(country, athlete_id, dynamo):
-    table = dynamo.Table(settings.ATHLETE_AVAILABILITY_TABLE)
-    try:
-        response = table.put_item(
-            Item={
-                'athlete_country': country,
-                'athlete_id': athlete_id,
-                'availability': {} #initialise empty
-            },
-            ConditionExpression='attribute_not_exists(athlete_country) AND attribute_not_exists(athlete_id)'
-        )
-    except ClientError as e:
-        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            #handle this
-            print(e.response['Error']['Message'])
-    else:
-        return response
-
-
 #UPDATE
-def update_item(country, athlete_id, item, dynamo):
-    table = dynamo.Table(settings.ATHLETE_AVAILABILITY_TABLE)
+def update_item(athlete_id, date_time, location, country, dynamo):
+    table = dynamo.Table(ATHLETE_AVAILABILITY_TABLE)
 
-    date_time = datetime.datetime.fromisoformat(item['datetimeUTC'])
-    location = item['location']
+    date_time = datetime.datetime.fromisoformat(date_time)
 
     date_attribute = date_time.date().isoformat()
     date_time_attribute = date_time.isoformat()
@@ -51,18 +29,14 @@ def update_item(country, athlete_id, item, dynamo):
     try:
         response = table.update_item(
             Key={
-                'athlete_country': country,
-                'athlete_id': athlete_id
+                'athlete_id': athlete_id,
+                'date': date_attribute,
             },
-            UpdateExpression='set availability.#attrName = :item',
-            ExpressionAttributeNames={
-                '#attrName' : date_attribute
-            },
+            UpdateExpression='set date_time = :dt, location_address = :loc, location_country = :c',
             ExpressionAttributeValues={
-                ':item' : {
-                    'date_time' : date_time_attribute,
-                    'location': location
-                }
+                    ':dt' : date_time_attribute,
+                    ':loc': location,
+                    ':c': country
             },
             ReturnValues="ALL_NEW"
         )
@@ -73,23 +47,10 @@ def update_item(country, athlete_id, item, dynamo):
 
 
 #update availability
-def update_availability(country, athlete_id, availability):
+def update_availability(athlete_id, date_time, location, country):
     dynamo = connect()
-    for item in availability:
-        resp = update_item(country, athlete_id, item, dynamo=dynamo)
-        if resp == None:
-            break
+    resp = update_item(athlete_id, date_time, location, country, dynamo=dynamo)
     if resp:
-        return "Updated Successfully"
+        return UPDATE_SUCCESS
     else:
         return None
-
-#initialise availability
-def initialise_availability(country, athlete_id):
-    dynamo = connect()
-    resp = put_item(country, athlete_id, dynamo)
-    if resp:
-        return "Initialised Successfully"
-    else:
-        return None
-

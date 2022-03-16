@@ -2,29 +2,11 @@
 # Request format for update availability
 
 [{
-	"country": "Ireland",
-	"athlete_id": "99",
-	"availability": [
-        {
-			"datetimeUTC": "datetime",
-			"location": "location1"
-		},
-		{
-			"datetimeUTC": "datetime",
-			"location": "location2"
-		},
-        ...
-	]
-}]
-
-Note: you can send several availability uploads at once, these availability items are shown above^
-
-
-# Request format for initialise athelte availability
-
-[{
-	"country": "Ireland",
-	"athlete_id": "99"
+	
+	"athlete_id": "12345",
+	"datetimeUTC": "2022-03-16T12:18:51.224726",
+	"location": "Dublin 8",
+	"location_country" : "Ireland"
 }]
 
 ### datetimeUTC

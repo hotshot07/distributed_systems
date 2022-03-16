@@ -1,6 +1,7 @@
 from flask import Flask, request, make_response
 
 import services
+from settings import *
 
 app = Flask(__name__)
 
@@ -9,38 +10,23 @@ app = Flask(__name__)
 def update_availability():
     if request.method == 'POST':
         data = request.get_json()
-        country = data[0]['country']
         athlete_id = data[0]['athlete_id']
-        availability = data[0]['availability']
+        date_time_utc = data[0]['datetimeUTC']
+        location = data[0]['location']
+        country = data[0]['location_country']
+        
         resp = services.update_availability(
-            country, 
             athlete_id,
-            availability
+            date_time_utc,
+            location,
+            country
             )
         if resp:
             return resp
         else:
-            return make_response('Updates could not be completed, item may not exist', 500)
+            return make_response(ITEM_DOES_NOT_EXIST, 403)
     else:
-        return make_response('Method not recognised, use POST', 405 )
-
-
-@app.route("/initialise-athlete-availability", methods=['POST'])
-def initialise_availability():
-    if request.method == 'POST':
-        data = request.get_json()
-        country = data[0]['country']
-        athlete_id = data[0]['athlete_id']
-        resp = services.initialise_availability(
-            country,
-            athlete_id
-        )
-        if resp:
-            return resp
-        else:
-            return make_response('Initialisation could not be completed, item may already exist', 500) 
-    else:
-        return make_response('Method Not Recognised, use POST', 405 )
+        return make_response(METHOD_NOT_FOUND, 405 )
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port='4446')
+    app.run(host='0.0.0.0', port='4446')
