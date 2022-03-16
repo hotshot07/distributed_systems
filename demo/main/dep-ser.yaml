@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-deployment
+  labels:
+    app: main-svc
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: main-svc 
+  template:
+    metadata:
+      labels:
+        app: main-svc 
+    spec:
+      containers:
+      - name: main-svc
+        image: hotshot07/main-demo:latest
+        imagePullPolicy: Always
+        command: ["/bin/sh","-c"]
+        args: ["python3 main.py"]
+        ports:
+        - containerPort: 5000
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: main-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: main-svc
+  ports:
+  - port: 5000
+
