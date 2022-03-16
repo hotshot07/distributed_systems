@@ -24,7 +24,7 @@ def update_item(athlete_id, date_time, location, country, dynamo):
     date_time = datetime.datetime.fromisoformat(date_time)
 
     date_attribute = date_time.date().isoformat()
-    date_time_attribute = date_time.isoformat()
+    time_attribute = date_time.time().isoformat()
 
     try:
         response = table.update_item(
@@ -32,9 +32,9 @@ def update_item(athlete_id, date_time, location, country, dynamo):
                 'athlete_id': athlete_id,
                 'date': date_attribute,
             },
-            UpdateExpression='set date_time = :dt, location_address = :loc, location_country = :c',
+            UpdateExpression='set available_time = :t, location_address = :loc, location_country = :c',
             ExpressionAttributeValues={
-                    ':dt' : date_time_attribute,
+                    ':t' : time_attribute,
                     ':loc': location,
                     ':c': country
             },

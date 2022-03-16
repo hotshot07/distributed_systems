@@ -11,3 +11,4 @@ ITEM_ALREADY_EXISTS = 'Initialisation could not be completed, item may already e
 ITEM_DOES_NOT_EXIST = 'Initialisation could not be completed, item may not exist'
 INIT_SUCCESS = 'Initialised Successfully'
 UPDATE_SUCCESS = 'Updated Successfully'
+INVALID_REQUEST_BODY = 'Invalid Request Body'

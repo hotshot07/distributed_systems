@@ -1,6 +1,7 @@
 from flask import Flask, request, make_response
 
 import services
+import util
 from settings import *
 
 app = Flask(__name__)
@@ -10,17 +11,11 @@ app = Flask(__name__)
 def update_availability():
     if request.method == 'POST':
         data = request.get_json()
-        athlete_id = data[0]['athlete_id']
-        date_time_utc = data[0]['datetimeUTC']
-        location = data[0]['location']
-        country = data[0]['location_country']
+        availability = util.create_and_validate(data)
+        if availability == 0:
+            return make_response(INVALID_REQUEST_BODY, 400)
         
-        resp = services.update_availability(
-            athlete_id,
-            date_time_utc,
-            location,
-            country
-            )
+        resp = services.update_availability(availability)
         if resp:
             return resp
         else:
