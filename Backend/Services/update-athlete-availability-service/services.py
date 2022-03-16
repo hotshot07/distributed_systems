@@ -1,5 +1,4 @@
 import datetime
-from sqlite3 import DataError
 import boto3
 from botocore.exceptions import ClientError
 
