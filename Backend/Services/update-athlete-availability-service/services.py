@@ -5,9 +5,7 @@ from botocore.exceptions import ClientError
 
 import settings
 
-#TODO: Insert Correct times
 #TODO: More error handling
-#TODO: make updates atomic
 
 
 #Create Resource
