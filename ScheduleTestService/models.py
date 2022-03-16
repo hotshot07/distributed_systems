@@ -1,6 +1,16 @@
 import datetime
-from constants import *
+import boto3, botocore
+from settings import *
 
+resource = boto3.resource(
+    'dynamodb',
+    aws_access_key_id     = AWS_ACCESS_KEY_ID,
+    aws_secret_access_key = AWS_SECRET_ACCESS_KEY,
+    region_name           = REGION_NAME,
+)
+
+AthleteTestTable = resource.Table(ATHELTE_TEST_TABLE)
+AthleteAvailabilityTable = resource.Table(ATHLETE_AVAILABILITY_TABLE)
 
 class UserProfile:
     def __init__(self, user_id, first_name, second_name) -> None:
@@ -20,26 +30,44 @@ class TestResult:
         self.note = note
 
 class AthleteTest:
-    def __init__(self, availability_id, tester_id, orchestrator_id):
+    def __init__(self, athlete_id, date, tester_id, orchestrator_id):
         try:
-            self.__init_availability_item(availability_id)
+            self.__init_availability_item(athlete_id, date)
             self.__init_tester_item(tester_id)
             self.__init_orchestrator_item(orchestrator_id)
+            self.__init_athlete_item(athlete_id)
+            self.__init_datetime_key(self.start_date, self.start_time)
             self.result : TestResult = TestResult()
-            self.assigned_on = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            self.test_id = self.availability_id
+            self.assigned_on = datetime.datetime.now().isoformat()
         except Exception as e:
-            raise(f"Cannot create AthleteTest with availability_id={availability_id}, \
-                tester_id={tester_id}, orchestrator_id={orchestrator_id}.\n \
-                {e}")
+            raise Exception(f"Cannot create AthleteTest with athlete_id={athlete_id}, date={date}, tester_id={tester_id}, orchestrator_id={orchestrator_id}.\n Exception: {e}")
 
-    def __init_availability_item(self, id):
-        # TODO Call Athlete Availability DB
-        self.availability_id = id
-        self.test_datetime = "2022-03-15 12:00:00"
-        self.country = "Ireland"
-        user_id = "1"
-        self.athlete : UserProfile = self.__init_user_item(user_id)
+    def __init_datetime_key(self, start_date, start_time):
+        test_datetime_as_dt = datetime.datetime.fromisoformat(f"{start_date} {start_time}")
+        if test_datetime_as_dt.minute >= 5:
+            test_datetime_as_dt = test_datetime_as_dt + datetime.timedelta(hours=1)
+        test_datetime_as_dt = test_datetime_as_dt.replace(second=0, minute=0)
+        self.test_datetime = test_datetime_as_dt.strftime("%Y-%m-%d %H:%M:%S")
+
+    def __init_availability_item(self, athlete_id, date):
+        availability_item = self.get_athlete_availability(athlete_id, date)
+        self.start_date = availability_item.get("date")
+        self.start_time = availability_item.get("available_time")
+        self.location = availability_item.get("location")
+        self.country = availability_item.get("location_country")
+
+    def get_athlete_availability(self, athlete_id, date):
+        try:
+            response = AthleteAvailabilityTable.get_item(
+                Key={
+                    'athlete_id': athlete_id,
+                    'date': date,
+                }
+            )
+        except botocore.exceptions.ClientError as e:
+            print(e.response['Error']['Message'])
+        else:
+            return response['Item']
 
     def __init_user_item(self, user_id):
         # TODO Call User DB 
@@ -47,9 +75,13 @@ class AthleteTest:
 
     def __init_tester_item(self, tester_id):
         self.tester : UserProfile = self.__init_user_item(tester_id)
+        self.tester_id = self.tester.user_id
 
     def __init_orchestrator_item(self, orchestrator_id):
         self.orchestrator : UserProfile = self.__init_user_item(orchestrator_id)
+
+    def __init_athlete_item(self, athlete_id):
+        self.athlete : UserProfile = self.__init_user_item(athlete_id)
 
     def validate_item(self):
         # TODO Add validation to check item can safely be created?
