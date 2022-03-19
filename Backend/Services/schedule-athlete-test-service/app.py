@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 import requests
 from forms import CreateTestForm, UpdateTestResultForm
-from dynamodb_handler import create_test, update_test_result
+from dynamodb_handler import create_test, update_test_result, create_test_using_transaction
 from settings import *
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ def assign_test():
                               tester_id=request.get_json().get('tester_id'),
                               orchestrator_id=request.get_json().get('orchestrator_id'))
         if form.validate():
-            test_item, dynamo_msg = create_test(athlete_id=form.athlete_id,
+            test_item, dynamo_msg = create_test_using_transaction(athlete_id=form.athlete_id,
                                                 orchestrator_id=form.orchestrator_id,
                                                 date=form.date,
                                                 tester_id=form.tester_id)
