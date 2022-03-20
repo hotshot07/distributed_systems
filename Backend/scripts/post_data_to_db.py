@@ -1,7 +1,7 @@
 from urllib import response
 from settings import *
 import boto3
-from generate_ids import create_country_ado_dict, generate_eight_digit_ids
+from generate_ids import create_country_ado_dict, generate_ten_digit_ids
 import time 
 
 resource = boto3.resource(
@@ -13,7 +13,7 @@ resource = boto3.resource(
 
 
 CountryAdoId = resource.Table(COUNTRY_ADO_ID_TABLE)
-AdoAthelete = resource.Table(ADO_ATHLETE)
+UserProfile = resource.Table(USER_PROFILE)
 
 # if __name__ == "__main__":
     
@@ -40,23 +40,33 @@ AdoAthelete = resource.Table(ADO_ATHLETE)
 #     print(response)
 
 demo_countries = ['United States of America', 'United Kingdom' ,'Canada' , 'Ireland']
+athlete_ids = [generate_ten_digit_ids() for i in range(len(demo_countries))]
 
 if __name__ == '__main__':
-    for country in demo_countries:
-        #ugh so risky but whatever
-        ado = country + ' ' + 'ADO'
-        for i in range(2):
-            try:
-                response = AdoAthelete.put_item(
-                Item = {
-                    'Ado': ado,
-                    'AthleteId': str(generate_eight_digit_ids())
-                    }
-                )
-                time.sleep(1)
-                print(response)
-            except Exception as e:
-                print(e)
+    for country, ids in zip(demo_countries, athlete_ids):
+        item_dict = {
+            'Organization': 'WADA',
+            'Id': str(ids),
+            'AccountType': 'WADA',
+            'AccountStatus': 'Inactive'
+        }
+        
+        response = UserProfile.put_item(
+                Item = item_dict
+            )
+        
+        print(response)
+        
+        time.sleep(1)
+
+        
+        
+        
+        
+        
+        
+        
+        
                 
      
 

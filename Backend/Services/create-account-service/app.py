@@ -1,69 +1,54 @@
 from flask import Flask, jsonify, request
 from dynamo_handler import *
-from flask import Response
+from models import *
 
 app = Flask(__name__)
 
-
+# three diffferent routres for different account types
+# yes they follow the same pattern, but i wanted separation of concern + if we ever need to update one model,
+# we can do it without affecting the other models
 @app.route("/create-athlete-account", methods=['GET', 'POST'])
 def create_athlete_account():
     if request.method == 'POST':
         
         data = request.get_json()
+        athlete_model = Athlete(**data)
         
-        adoAtheltedict = {
-            'Ado': data['Ado'],
-            'AthleteId': data['AthleteId']
-        }
-        
-        # check if data exists in adoAthelte table
-        # if not, return invalid data error        
-        response = check_if_id_exists_in_table(**adoAtheltedict)
-        
-        if response.get('error'):
-            return Response(response.get('error'), response.get('status_code'))
-        
-        #account exists in adoAthlete, now update users table
-        
-        # data validation needed
-        
-        user_profile_data = {
-            'Organization': data['Ado'],
-            'Id': data['AthleteId'],
-            'FirstName': data['FirstName'],
-            'LastName': data['LastName'],
-            'Email': data['Email'],
-            'Country': data['Country'],
-            'PhoneNumber': data['PhoneNumber']
-        }
-        
-        
-        response = create_user_if_not_exists(**user_profile_data)
-        
-        return jsonify(response)
-        
-        return jsonify({'message': 'Successfully created athlete account'})
-        # if it exists, create athelte account in users table 
-        
-        
-        
-        
-        
-    else:
-        return jsonify({"error": "Method not allowed"})
+        ## will return false if any of the required fields are missing
+        if not athlete_model.check():
+            return jsonify({"error": "Missing data parameters"}), 400
+
+        return create_user_if_not_exists(**athlete_model.account_dict())
 
 
-@app.route("/create-ado-account", methods=['GET', 'POST'])
-# pass the ado name and email to this account, passoword is created in the db 
-def stuff2():
-    return 'ok'
+@app.route("/create-orch-account", methods=['GET', 'POST'])
+def create_orchestrator_account():
+    if request.method == 'POST':
+        
+        data = request.get_json()
+        orchestrator_model = Orchestrator(**data)
+        
+        ## will return false if any of the required fields are missing
+        if not orchestrator_model.check():
+            return jsonify({"error": "Missing or invalid data parameters"}), 400
+
+        return create_user_if_not_exists(**orchestrator_model.account_dict())
+
 
 
 @app.route("/create-tester-account", methods=['GET', 'POST'])
-def stuff():
-    return 'ok'
-# pass the tester name and email to this account, passoword is created
+def create_tester_account():
+    if request.method == 'POST':
+        
+        data = request.get_json()
+        tester_model = Tester(**data)
+        
+        ## will return false if any of the required fields are missing
+        if not tester_model.check():
+            return jsonify({"error": "Missing data parameters"}), 400
+
+        return create_user_if_not_exists(**tester_model.account_dict())
 
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(port=5000, debug =True)

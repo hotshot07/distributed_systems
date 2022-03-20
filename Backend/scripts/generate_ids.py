@@ -3,8 +3,8 @@ import random
 from countries import country_list, country_dict
 from pprint import pprint
 
-# generate random 8 digit ids for athletes
-generate_eight_digit_ids  = lambda: random.randint(100000000, 999999999)
+# generate random 10 digit ids for athletes
+generate_ten_digit_ids  = lambda: random.randint(10000000000, 99999999999)
     
 # generate random 3 digit ids for ados
 generate_five_digit_ids = lambda : random.randint(10000, 99999)
