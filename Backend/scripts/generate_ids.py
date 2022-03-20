@@ -1,6 +1,6 @@
 from itertools import count
 import random 
-from countries import country_list
+from countries import country_list, country_dict
 from pprint import pprint
 
 # generate random 8 digit ids for athletes
@@ -25,4 +25,17 @@ def check_country_dict_uniqie():
     else:
         print('feck')
 
-check_country_dict_uniqie()
+def create_country_ado_dict():
+    
+    all_country_ado_dict = {}
+    for key, value in country_dict.items():
+        all_country_ado_dict[key] = {
+            'Country': key,
+            'Id': value,
+            'Ado': key + ' ' + 'ADO'
+        }
+    
+    for key, value in all_country_ado_dict.items():
+        yield value
+
+# check_country_dict_uniqie()

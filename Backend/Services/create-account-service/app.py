@@ -17,10 +17,10 @@ def create_athlete_account():
 
 
 @app.route("/create-ado-account", methods=['GET', 'POST'])
-
+# pass the ado name and email to this account, passoword is created in the db 
 
 @app.route("/create-tester-account", methods=['GET', 'POST'])
-
+# pass the tester name and email to this account, passoword is created
 
 
 if __name__ == "__main__":
