@@ -1,12 +1,15 @@
 from flask import Flask, request, make_response
 from Backend.Services.view_test_results_service.service import get_test_results
+# import ipdb
+#
+# ipdb.set_trace()
 app = Flask(__name__)
 
 
-@app.route("/view-test_results", methods=['GET'])
+@app.route("/view-test-results", methods=['GET'])
 def view_results():
     country = 'Ireland'
-    get_test_results(country=country)
+    return get_test_results(country=country)
 
 
 if __name__ == '__main__':
