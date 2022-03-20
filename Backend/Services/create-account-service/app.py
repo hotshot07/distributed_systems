@@ -10,23 +10,37 @@ def create_athlete_account():
     if request.method == 'POST':
         
         data = request.get_json()
-        # check if data exists in adoAthelte table
-        # if not, return invalid data error
         
         adoAtheltedict = {
             'Ado': data['Ado'],
             'AthleteId': data['AthleteId']
         }
         
+        # check if data exists in adoAthelte table
+        # if not, return invalid data error        
         response = check_if_id_exists_in_table(**adoAtheltedict)
         
         if response.get('error'):
             return Response(response.get('error'), response.get('status_code'))
         
-        #account exists, now update users table
+        #account exists in adoAthlete, now update users table
+        
+        # data validation needed
+        
+        user_profile_data = {
+            'Organization': data['Ado'],
+            'Id': data['AthleteId'],
+            'FirstName': data['FirstName'],
+            'LastName': data['LastName'],
+            'Email': data['Email'],
+            'Country': data['Country'],
+            'PhoneNumber': data['PhoneNumber']
+        }
         
         
+        response = create_user_if_not_exists(**user_profile_data)
         
+        return jsonify(response)
         
         return jsonify({'message': 'Successfully created athlete account'})
         # if it exists, create athelte account in users table 
