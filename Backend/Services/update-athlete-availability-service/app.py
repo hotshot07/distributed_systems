@@ -14,7 +14,9 @@ def update_availability():
         availability = util.create_and_validate(data)
         if availability == 0:
             return make_response(INVALID_REQUEST_BODY, 400)
-        
+        if type(availability) == str:
+            return make_response(availability, 400)
+            
         resp = services.update_availability(availability)
         if resp:
             return resp

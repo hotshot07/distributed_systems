@@ -18,25 +18,23 @@ def connect():
 
 
 #UPDATE
-def update_item(athlete_id, date_time, location, country, dynamo):
+def update_item(availability, dynamo):
     table = dynamo.Table(ATHLETE_AVAILABILITY_TABLE)
-
-    date_time = datetime.datetime.fromisoformat(date_time)
-
-    date_attribute = date_time.date().isoformat()
-    time_attribute = date_time.time().isoformat()
+    #date_time already in datetime object from util.py
+    date_attribute = availability['date_time_utc'].date().isoformat()
+    time_attribute = availability['date_time_utc'].time().isoformat()
 
     try:
         response = table.update_item(
             Key={
-                'athlete_id': athlete_id,
+                'athlete_id': availability['athlete_id'],
                 'date': date_attribute,
             },
             UpdateExpression='set available_time = :t, location_address = :loc, location_country = :c',
             ExpressionAttributeValues={
                     ':t' : time_attribute,
-                    ':loc': location,
-                    ':c': country
+                    ':loc': availability['location'],
+                    ':c': availability['country']
             },
             ReturnValues="ALL_NEW"
         )
@@ -47,9 +45,9 @@ def update_item(athlete_id, date_time, location, country, dynamo):
 
 
 #update availability
-def update_availability(athlete_id, date_time, location, country):
+def update_availability(availability):
     dynamo = connect()
-    resp = update_item(athlete_id, date_time, location, country, dynamo=dynamo)
+    resp = update_item(availability, dynamo=dynamo)
     if resp:
         return UPDATE_SUCCESS
     else:
