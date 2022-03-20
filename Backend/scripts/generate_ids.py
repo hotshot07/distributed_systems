@@ -29,13 +29,12 @@ def create_country_ado_dict():
     
     all_country_ado_dict = {}
     for key, value in country_dict.items():
-        all_country_ado_dict[key] = {
-            'Country': key,
-            'Id': value,
-            'Ado': key + ' ' + 'ADO'
-        }
+        if key == 'United States of America' or key == 'United Kingdom' or key == 'Canada' or key == 'Ireland':
+            all_country_ado_dict[key] = {
+                'Country': key,
+                'Id': value,
+                'Ado': key + ' ' + 'ADO'
+            }
     
     for key, value in all_country_ado_dict.items():
         yield value
-
-# check_country_dict_uniqie()

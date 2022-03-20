@@ -1,5 +1,8 @@
+from urllib import response
 from settings import *
 import boto3
+from generate_ids import create_country_ado_dict, generate_eight_digit_ids
+import time 
 
 resource = boto3.resource(
     'dynamodb',
@@ -10,18 +13,52 @@ resource = boto3.resource(
 
 
 CountryAdoId = resource.Table(COUNTRY_ADO_ID_TABLE)
+AdoAthelete = resource.Table(ADO_ATHLETE)
 
-
-if __name__ == "__main__":
-    response = CountryAdoId.put_item( 
-                Item = {
-                    'Country': 'Ireland',
-                    'Id': 2
-                }          
-    )
-
-    print(response)
+# if __name__ == "__main__":
     
+#     for country in create_country_ado_dict():
+#         try:
+#             response = CountryAdoId.put_item(
+#                 Item = country
+#             )
+#             time.sleep(1)
+#         except Exception as e:
+#             print(e.args)
+            
+#         print(response)
+
+# if __name__ == "__main__":
+    
+#     response = CountryAdoId.delete_item(
+#         Key = {
+#             'Country':'Ireland',
+#             'Id':2
+#         }
+#     )
+    
+#     print(response)
+
+demo_countries = ['United States of America', 'United Kingdom' ,'Canada' , 'Ireland']
+
+if __name__ == '__main__':
+    for country in demo_countries:
+        #ugh so risky but whatever
+        ado = country + ' ' + 'ADO'
+        for i in range(2):
+            try:
+                response = AdoAthelete.put_item(
+                Item = {
+                    'Ado': ado,
+                    'AthleteId': str(generate_eight_digit_ids())
+                    }
+                )
+                time.sleep(1)
+                print(response)
+            except Exception as e:
+                print(e)
+                
+     
 
 
 
