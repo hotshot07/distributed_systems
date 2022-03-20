@@ -29,6 +29,7 @@ def create_country_ado_dict():
     
     all_country_ado_dict = {}
     for key, value in country_dict.items():
+        #for testing purposes only
         if key == 'United States of America' or key == 'United Kingdom' or key == 'Canada' or key == 'Ireland':
             all_country_ado_dict[key] = {
                 'Country': key,
