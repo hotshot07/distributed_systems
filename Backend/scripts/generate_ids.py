@@ -6,7 +6,7 @@ from pprint import pprint
 # generate random 10 digit ids for athletes
 generate_ten_digit_ids  = lambda: random.randint(10000000000, 99999999999)
     
-# generate random 3 digit ids for ados
+# generate random 5 digit ids for ados
 generate_five_digit_ids = lambda : random.randint(10000, 99999)
 
 
