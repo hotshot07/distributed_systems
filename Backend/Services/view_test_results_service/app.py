@@ -1,14 +1,15 @@
-from flask import Flask, request, make_response
+from flask import Flask
 from Backend.Services.view_test_results_service.service import get_test_results
-# import ipdb
-#
-# ipdb.set_trace()
 app = Flask(__name__)
 
 
-@app.route("/view-test-results", methods=['GET'])
-def view_results():
-    country = 'Ireland'
+@app.route("/view-test-results/<string:country>", methods=['GET'])
+def view_results(country: str):
+    """
+    Fetch test results
+    :param country: Country whose test results are asked
+    :return: json data
+    """
     return get_test_results(country=country)
 
 
