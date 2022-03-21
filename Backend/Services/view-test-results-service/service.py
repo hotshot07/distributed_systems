@@ -33,9 +33,4 @@ def get_test_results(country):
         FilterExpression=Attr('country').eq(country)
     )
 
-    # if response['Items']:
-    #     return response
-    # else:
-    #     return f'No test results found for country {country}'
-
     return response if response['Items'] else f'No test results found for country {country}'
