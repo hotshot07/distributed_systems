@@ -21,25 +21,6 @@ AthleteTestTable = resource.Table(ATHELTE_TEST_TABLE)
 AthleteAvailabilityTable = resource.Table(ATHLETE_AVAILABILITY_TABLE)
 
 
-def create_test(athlete_id, date, tester_id, orchestrator_id):
-    try:
-        athlete_test: AthleteTest = AthleteTest(
-            athlete_id, date, tester_id, orchestrator_id)
-        athlete_test_json = athlete_test.as_json()
-    except Exception as e:
-        return e.args, ITEM_PARAMETERS_INVALID
-    try:
-        response = AthleteTestTable.put_item(
-            Item=athlete_test_json,
-            ConditionExpression='attribute_not_exists(tester_id) AND attribute_not_exists(test_datetime)'
-        )
-    except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            return athlete_test_json, ITEM_COULD_NOT_BE_ADDED
-        raise e
-    return athlete_test_json, response
-
-
 def create_test_using_transaction(athlete_id, date, tester_id, orchestrator_id):
     try:
         athlete_test: AthleteTest = AthleteTest(
@@ -48,36 +29,35 @@ def create_test_using_transaction(athlete_id, date, tester_id, orchestrator_id):
     except Exception as e:
         return e.args, ITEM_PARAMETERS_INVALID
     # TODO ? Might need to use a form of optimistic locking
-    response = client.transact_write_items(
-        TransactItems=[
-            {
-                'Update': {
-                    'TableName': ATHLETE_AVAILABILITY_TABLE,
-                    'Key': {
-                        'athlete_id': {'S':athlete_test.athlete.user_id},
-                        'date': {'S':athlete_test.start_date},
-                    },
-                    'UpdateExpression': 'SET assigned_test=:t',
-                    'ExpressionAttributeValues': {
-                        ':t': {'BOOL':True},
-                    },
-                    'ConditionExpression': 'attribute_not_exists(assigned_test)'
+    try:
+        response = client.transact_write_items(
+            TransactItems=[
+                {
+                    'Update': {
+                        'TableName': ATHLETE_AVAILABILITY_TABLE,
+                        'Key': {
+                            'athlete_id': {'S':athlete_test.athlete.user_id},
+                            'date': {'S':athlete_test.start_date},
+                        },
+                        'UpdateExpression': 'SET assigned_test=:t',
+                        'ExpressionAttributeValues': {
+                            ':t': {'BOOL':True},
+                        },
+                        'ConditionExpression': 'attribute_not_exists(assigned_test)'
+                    }
+                },
+                {
+                    'Put': {
+                        'TableName': ATHELTE_TEST_TABLE,
+                        'Item': athlete_test_json,
+                        'ConditionExpression': 'attribute_not_exists(athlete_id) AND attribute_not_exists(tester_id) AND attribute_not_exists(test_datetime)'
+                    }
                 }
-            },
-            {
-                'Put': {
-                    'TableName': ATHELTE_TEST_TABLE,
-                    'Item': athlete_test_json,
-                    'ConditionExpression': 'attribute_not_exists(athlete_id) AND attribute_not_exists(tester_id) AND attribute_not_exists(test_datetime)'
-                }
-            }
-        ]
-    )
+            ]
+        )
+    except Exception as e:
+        return e.args, ITEM_PARAMETERS_INVALID
     return athlete_test_json, response
-
-
-response = create_test_using_transaction("12345", "2022-03-16", "Tester1", "Orchestrator1")
-print(response[1])
 
 def update_test_result(tester_id, test_datetime, test_result):
     try:
@@ -86,7 +66,7 @@ def update_test_result(tester_id, test_datetime, test_result):
                 'tester_id': tester_id,
                 'test_datetime': test_datetime
             },
-            UpdateExpression='SET #res.#res = :val',
+            UpdateExpression='SET #res = :val',
             ExpressionAttributeValues={
                 ":val": test_result
             },

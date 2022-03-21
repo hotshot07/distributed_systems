@@ -27,11 +27,6 @@ class UserProfile:
         return f"{self.user_id}"
 
 
-class TestResult:
-    def __init__(self, result=TEST_NOT_AVAILABLE, note=None) -> None:
-        self.result = result
-        self.note = note
-
 
 class AthleteTest:
     def __init__(self, athlete_id, date, tester_id, orchestrator_id):
@@ -41,7 +36,7 @@ class AthleteTest:
             self.__init_orchestrator_item(orchestrator_id)
             self.__init_athlete_item(athlete_id)
             self.__init_datetime_key(self.start_date, self.start_time)
-            self.result: TestResult = TestResult()
+            self.result = TEST_NOT_AVAILABLE
             self.assigned_on = datetime.datetime.now().isoformat()
         except Exception as e:
             raise Exception(
@@ -99,7 +94,6 @@ class AthleteTest:
         item_dict['athlete'] = self.athlete.__dict__
         item_dict['tester'] = self.tester.__dict__
         item_dict['orchestrator'] = self.orchestrator.__dict__
-        item_dict['result'] = self.result.__dict__
         return item_dict
 
     def to_dynamo_json(self):
@@ -146,7 +140,7 @@ class AthleteTest:
             }
             },
             'test_datetime': {'S': self.test_datetime},
-            'result': {'S': self.result.result},
+            'result': {'S': self.result},
             'assigned_on': {'S': self.assigned_on},
         }
         return athlete_test_safe

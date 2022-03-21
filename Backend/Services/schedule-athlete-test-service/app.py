@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 import requests
 from forms import CreateTestForm, UpdateTestResultForm
-from dynamodb_handler import create_test, update_test_result, create_test_using_transaction
+from dynamodb_handler import update_test_result, create_test_using_transaction
 from settings import *
 
 app = Flask(__name__)
