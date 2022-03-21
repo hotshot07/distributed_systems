@@ -1,4 +1,4 @@
-from boto3.dynamodb.conditions import Key, Attr
+from boto3.dynamodb.conditions import Attr
 from decouple import config
 import boto3
 
