@@ -1,5 +1,5 @@
 from flask import Flask
-from Backend.Services.view_test_results_service.service import get_test_results
+from .service import get_test_results
 app = Flask(__name__)
 
 
