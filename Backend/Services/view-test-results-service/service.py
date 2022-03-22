@@ -1,4 +1,4 @@
-from boto3.dynamodb.conditions import Attr
+from boto3.dynamodb.conditions importq Key
 from decouple import config
 import boto3
 
@@ -28,9 +28,8 @@ def get_test_results(country):
     :param country: country whose test results are asked
     :return: json response
     """
-    response = connect().scan(
+    response = connect().query(
         IndexName='country-index',
-        FilterExpression=Attr('country').eq(country)
+        KeyConditionExpression=Key('country').eq(country)
     )
-
     return response if response['Items'] else f'No test results found for country {country}'
