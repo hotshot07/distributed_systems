@@ -1,29 +1,45 @@
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, jsonify
 
 import services
-import util
+import models
+import forms
 from settings import *
 
 app = Flask(__name__)
 
 #for request format see readme
-@app.route("/update-athlete-availability", methods=['POST'])
+@app.route("/update-athlete-availability", methods=['GET','POST'])
 def update_availability():
     if request.method == 'POST':
-        data = request.get_json()
-        availability = util.create_and_validate(data)
-        if availability == 0:
-            return make_response(INVALID_REQUEST_BODY, 400)
-        if type(availability) == str:
-            return make_response(availability, 400)
+        data = request.get_json()[0]
+        availability_form = forms.convert_data_to_form(data)
+
+        if availability_form.validate():
             
-        resp = services.update_availability(availability)
-        if resp:
-            return resp
-        else:
-            return make_response(ITEM_DOES_NOT_EXIST, 403)
+            try: 
+                athlete_availability: AthleteAvailability = models.AthleteAvailability(availability_form)
+            except Exception as e:
+                return make_response(str(e), 400)
+
+            if type(athlete_availability) is str:
+                return(make_response(athlete_availability, 403))
+
+            try: 
+                resp = services.update_availability(athlete_availability)
+                if resp:
+                    return make_response(UPDATE_SUCCESS, 200)
+            
+            except Exception as e:
+                return make_response(COULD_NOT_CREATE_ITEM, 403)
     else:
-        return make_response(METHOD_NOT_FOUND, 405 )
+        return jsonify({
+            'form': {
+                'athlete_id': 'str',
+                'date_time_utc': 'str',
+                'location': 'str',
+                'country': 'str'
+                }
+            })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='4446')
+    app.run(host='127.0.0.1', port=5000)
