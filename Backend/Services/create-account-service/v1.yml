@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: create-account-service-deployment
+  labels:
+    app: cas 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cas 
+  template:
+    metadata:
+      labels:
+        app: cas  
+    spec:
+      containers:
+      - name: cas 
+        image: hotshot07/create-account-service:latest
+        imagePullPolicy: Always
+        workingDir: /app
+        command: ["/bin/sh","-c"]
+        args: ["gunicorn app:app --bind 127.0.0.1:5000"]
+        ports:
+        - containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: create-account-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: cas
+  ports:
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+    name: create-account-service

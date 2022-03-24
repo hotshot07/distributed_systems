@@ -15,18 +15,44 @@ resource = boto3.resource(
 CountryAdoId = resource.Table(COUNTRY_ADO_ID_TABLE)
 UserProfile = resource.Table(USER_PROFILE)
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
     
-#     for country in create_country_ado_dict():
-#         try:
-#             response = CountryAdoId.put_item(
-#                 Item = country
-#             )
-#             time.sleep(1)
-#         except Exception as e:
-#             print(e.args)
+    for country in create_country_ado_dict():
+        try:
+            response = CountryAdoId.put_item(
+                Item = country
+            )
+            time.sleep(1)
+        except Exception as e:
+            print(e.args)
             
-#         print(response)
+        print(response)
+        
+        
+def auth_function(userid,pwd):
+    
+    # check if creds exist in dynamo 
+    
+    userid_pwd = {
+        'userid': userid,
+        'pwd': pwd
+    }
+    
+    # db has userid, pwd, hulib (has user logged in before)
+    
+    response = CountryAdoId.query(
+                Item = userid_pwd
+            )
+    
+    # if item exists, check if hulib is true
+    # if false, when returning return "inital login"
+    
+    # update hublib to true
+    
+    # return 'OK', 200
+     
+    
+    
 
 # if __name__ == "__main__":
     
@@ -39,25 +65,25 @@ UserProfile = resource.Table(USER_PROFILE)
     
 #     print(response)
 
-demo_countries = ['United States of America', 'United Kingdom' ,'Canada' , 'Ireland']
-athlete_ids = [generate_ten_digit_ids() for i in range(len(demo_countries))]
+# demo_countries = ['United States of America', 'United Kingdom' ,'Canada' , 'Ireland']
+# athlete_ids = [generate_ten_digit_ids() for i in range(len(demo_countries))]
 
-if __name__ == '__main__':
-    for country, ids in zip(demo_countries, athlete_ids):
-        item_dict = {
-            'Organization': 'WADA',
-            'Id': str(ids),
-            'AccountType': 'WADA',
-            'AccountStatus': 'Inactive'
-        }
+# if __name__ == '__main__':
+#     for country, ids in zip(demo_countries, athlete_ids):
+#         item_dict = {
+#             'Organization': 'WADA',
+#             'Id': str(ids),
+#             'AccountType': 'WADA',
+#             'AccountStatus': 'Inactive'
+#         }
         
-        response = UserProfile.put_item(
-                Item = item_dict
-            )
+#         response = UserProfile.put_item(
+#                 Item = item_dict
+#             )
         
-        print(response)
+#         print(response)
         
-        time.sleep(1)
+#         time.sleep(1)
 
         
         
