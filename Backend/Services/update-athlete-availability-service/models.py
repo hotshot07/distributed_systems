@@ -1,10 +1,11 @@
 import datetime
 from settings import *
 from countries import country_dict
+from forms import AvailabilityForm
 
 
-class AthleteAvailabiltiy:
-    def __init__(self, availability_form) -> None:
+class AthleteAvailability:
+    def __init__(self, availability_form : AvailabilityForm) -> None:
         self.athlete_id = availability_form.athlete_id
         self.location_address = availability_form.location
         try:
@@ -21,7 +22,7 @@ class AthleteAvailabiltiy:
         try:
             datetime_utc = datetime.datetime.fromisoformat(datetime_string)
             if ( (getattr(datetime_utc, 'minute', None) not in  [0, None] ) or (getattr(datetime_utc, 'second', None) not in  [0, None] ) or (getattr(datetime_utc, 'mircosecond', None) not in  [0, None] ) ):
-                raise Exception(INVALID_TIME_RESOLUTION_GIVEND_TIME_FORMAT_GIVEN)
+                raise Exception(INVALID_TIME_RESOLUTION_GIVEN)
             else:
                 self.date = datetime_utc.date().isoformat()
                 self.available_time = datetime_utc.time().isoformat()
@@ -30,9 +31,6 @@ class AthleteAvailabiltiy:
 
     
     def __verify_country(self, country):
-        if country == '':
-            raise Exception(INVALID_COUNTRY_GIVEN)
-        
         country = country.lower().capitalize()
         if country in country_dict.keys():
             self.location_country = country_dict[country]

@@ -9,6 +9,7 @@ REGION_NAME           = config("REGION_NAME")
 METHOD_NOT_FOUND = 'Method not recognised'
 ITEM_ALREADY_EXISTS = 'Initialisation could not be completed, item may already exist'
 ITEM_DOES_NOT_EXIST = 'Initialisation could not be completed, item may not exist'
+COULD_NOT_CREATE_ITEM = 'Could not create item'
 INIT_SUCCESS = 'Initialised Successfully'
 UPDATE_SUCCESS = 'Updated Successfully'
 INVALID_REQUEST_BODY = 'Invalid Request Body'

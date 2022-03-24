@@ -17,7 +17,7 @@ def update_availability():
         if availability_form.validate():
             
             try: 
-                athlete_availability = models.AthleteAvailabiltiy(availability_form)
+                athlete_availability: AthleteAvailability = models.AthleteAvailability(availability_form)
             except Exception as e:
                 return make_response(str(e), 400)
 
@@ -30,7 +30,7 @@ def update_availability():
                     return make_response(UPDATE_SUCCESS, 200)
             
             except Exception as e:
-                return make_response(ITEM_DOES_NOT_EXIST, 403)
+                return make_response(COULD_NOT_CREATE_ITEM, 403)
     else:
         return jsonify({
             'form': {
@@ -42,4 +42,4 @@ def update_availability():
             })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='127.0.0.1', port=5000)
