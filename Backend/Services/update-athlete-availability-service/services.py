@@ -1,8 +1,8 @@
-import datetime
 import boto3
 from botocore.exceptions import ClientError
 
 from settings import *
+from models import AthleteAvailability
 
 #TODO: More error handling
 
@@ -17,38 +17,27 @@ def connect():
     return dynamo_resource
 
 
-#UPDATE
-def update_item(availability, dynamo):
+def put_item(availability: AthleteAvailability, dynamo):
     table = dynamo.Table(ATHLETE_AVAILABILITY_TABLE)
-    #date_time already in datetime object from util.py
-    date_attribute = availability['date_time_utc'].date().isoformat()
-    time_attribute = availability['date_time_utc'].time().isoformat()
 
     try:
-        response = table.update_item(
-            Key={
-                'athlete_id': availability['athlete_id'],
-                'date': date_attribute,
-            },
-            UpdateExpression='set available_time = :t, location_address = :loc, location_country = :c',
-            ExpressionAttributeValues={
-                    ':t' : time_attribute,
-                    ':loc': availability['location'],
-                    ':c': availability['country']
-            },
-            ReturnValues="ALL_NEW"
+        response = table.put_item(
+            Item={
+                'athlete_id': availability.athlete_id,
+                'date': availability.date,
+                'available_time': availability.available_time,
+                'location_address': availability.location_address,
+                'location_country': availability.location_country
+            }
         )
-    except ClientError as e:
-        print("ERR:", e.response['Error']['Message'])
-    else:
         return response
+
+    except ClientError as e:
+        raise e
 
 
 #update availability
 def update_availability(availability):
     dynamo = connect()
-    resp = update_item(availability, dynamo=dynamo)
-    if resp:
-        return UPDATE_SUCCESS
-    else:
-        return None
+    resp = put_item(availability, dynamo=dynamo)
+    return resp

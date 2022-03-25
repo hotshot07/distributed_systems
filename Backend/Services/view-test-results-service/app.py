@@ -10,7 +10,8 @@ def view_results(country: str):
     :param country: Country whose test results are asked
     :return: json data
     """
-    return get_test_results(country=country)
+
+    return get_test_results(country=country.capitalize())
 
 
 if __name__ == '__main__':
