@@ -39,18 +39,13 @@ spec:
             secretKeyRef:
               name: aws-secret
               key: REGION_NAME
-        - name: COUNTRY_ADO_ID
-          value: "CountryAdoId"
-        - name: USER_PROFILE
-          value: "UserProfile"
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: create-account-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: cas
   ports:

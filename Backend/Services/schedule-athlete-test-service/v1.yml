@@ -20,7 +20,7 @@ spec:
         imagePullPolicy: Always
         workingDir: /app
         command: ["/bin/sh","-c"]
-        args: ["gunicorn app:app --bind 127.0.0.1:5000"]
+        args: ["gunicorn app:app --bind 127.0.0.1:5000 --log-level=debug"]
         ports:
         - containerPort: 5000
         env:
@@ -39,10 +39,6 @@ spec:
             secretKeyRef:
               name: aws-secret
               key: REGION_NAME
-        
-        ### add environment variables you need here; table names dont need to be secret ###
-        - name: COUNTRY_ADO_ID
-          value: CountryAdoId
 ---
 apiVersion: v1
 kind: Service

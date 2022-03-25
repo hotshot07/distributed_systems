@@ -39,10 +39,6 @@ spec:
             secretKeyRef:
               name: aws-secret
               key: REGION_NAME
-        
-        ### add environment variables you need here; table names dont need to be secret ###
-        - name: COUNTRY_ADO_ID
-          value: CountryAdoId
 ---
 apiVersion: v1
 kind: Service
