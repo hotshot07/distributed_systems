@@ -51,7 +51,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    app: cas
+    app: sats
   ports:
   - port: 5000
     targetPort: 5000
