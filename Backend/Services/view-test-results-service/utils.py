@@ -1,4 +1,4 @@
-country_list = [
+country_list = set([
     "Afghanistan",
     "Åland Islands",
     "Albania",
@@ -249,4 +249,4 @@ country_list = [
     "Yemen",
     "Zambia",
     "Zimbabwe",
-]
+])
