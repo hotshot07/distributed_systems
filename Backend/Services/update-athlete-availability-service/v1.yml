@@ -40,7 +40,7 @@ spec:
               name: aws-secret
               key: REGION_NAME
         
-        ### add stuff you need here; table names dont need to be secret ###
+        ### add all environment variables you need here; table names dont need to in secret ###
         - name: COUNTRY_ADO_ID
           value: CountryAdoId
 ---

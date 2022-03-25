@@ -40,20 +40,10 @@ spec:
               name: aws-secret
               key: REGION_NAME
         - name: COUNTRY_ADO_ID
-          valueFrom:
-            secretKeyRef:
-              name: aws-secret
-              key: COUNTRY_ADO_ID
+          value: "CountryAdoId"
         - name: USER_PROFILE
-          valueFrom:
-            secretKeyRef:
-              name: aws-secret
-              key: USER_PROFILE
-        - name: ACCOUNT_ID
-          valueFrom:
-            secretKeyRef:
-              name: aws-secret
-              key: ACCOUNT_ID
+          value: "UserProfile"
+
 ---
 apiVersion: v1
 kind: Service
