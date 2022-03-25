@@ -16,5 +16,6 @@ INVALID_REQUEST_BODY = 'Invalid Request Body'
 INVALID_TIME_RESOLUTION_GIVEN = 'The user has supplied an incorrect time format, the supplied utc time-slot must start on the hour. For example, 16:00 not 16:01'
 INVALID_TIME_FORMAT_GIVEN = 'The user has not given time in the correct format, please give utc time in iso (8601) format'
 INVALID_COUNTRY_GIVEN = 'The user given a country which is not present on our system'
+NOT_ATHLETE_ID = 'Please supply athlete id'
 
 EXPIRY_IN_DAYS = 30

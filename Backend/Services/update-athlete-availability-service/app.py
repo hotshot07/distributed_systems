@@ -30,7 +30,7 @@ def update_availability():
                     return make_response(UPDATE_SUCCESS, 200)
             
             except Exception as e:
-                return make_response(COULD_NOT_CREATE_ITEM, 403)
+                return make_response(str(e), 403)
     else:
         return jsonify({
             'form': {
@@ -40,6 +40,23 @@ def update_availability():
                 'country': 'str'
                 }
             })
+       
+        
+@app.route("/view-athlete-availability/<string:athlete_id>", methods=['GET'])
+def view_availability(athlete_id: str):
+    if request.method == 'GET':
+        try:
+            if athlete_id:
+                resp = services.get_availability(athlete_id)
+                return make_response(jsonify(resp),403)
+            else: 
+                return make_response(NOT_ATHLETE_ID, 403)
+        except Exception as e:
+            return make_response(str(e), 404)
+
+    else:
+        return make_response(NOT_ATHLETE_ID, 403) 
+        
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='127.0.0.1', port=5000)
