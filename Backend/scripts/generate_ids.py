@@ -18,7 +18,7 @@ def generate_country_dict():
         
     return country_dict 
 
-def check_country_dict_uniqie():
+def check_country_dict_unique():
     country_dict = generate_country_dict()
     if len(country_dict) == len(set(country_dict.values())):
         pprint(country_dict)
@@ -33,7 +33,7 @@ def create_country_ado_dict():
         if key == 'United States of America' or key == 'United Kingdom' or key == 'Canada' or key == 'Ireland':
             all_country_ado_dict[key] = {
                 'Country': key,
-                'Id': value,
+                'Id': str(value),
                 'Ado': key + ' ' + 'ADO'
             }
     
