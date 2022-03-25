@@ -11,6 +11,7 @@ class AthleteAvailability:
         try:
             self.__convert_time(availability_form.dateTime_utc)
             self.__verify_country(availability_form.country)
+            self.__item_expiry()
         except Exception as e:
             raise e
 
@@ -37,5 +38,10 @@ class AthleteAvailability:
         else:
             raise Exception(INVALID_COUNTRY_GIVEN)
 
-
+    def __item_expiry(self):
+        availability_datetime = datetime.datetime.fromisoformat(f"{self.date} {self.available_time}")
+        expiry_datetime = availability_datetime + datetime.timedelta(days=EXPIRY_IN_DAYS)
+        self.expiry_datetime = expiry_datetime.isoformat()
+        self.expiry_epoch = int(expiry_datetime.timestamp())
+        
 
