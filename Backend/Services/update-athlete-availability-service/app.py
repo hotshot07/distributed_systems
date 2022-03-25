@@ -17,7 +17,7 @@ def update_availability():
         if availability_form.validate():
             
             try: 
-                athlete_availability: AthleteAvailability = models.AthleteAvailability(availability_form)
+                athlete_availability: models.AthleteAvailability = models.AthleteAvailability(availability_form)
             except Exception as e:
                 return make_response(str(e), 400)
 
@@ -25,7 +25,7 @@ def update_availability():
                 return(make_response(athlete_availability, 403))
 
             try: 
-                resp = services.update_availability(athlete_availability)
+                resp = services.create_availability(athlete_availability)
                 if resp:
                     return make_response(UPDATE_SUCCESS, 200)
             
