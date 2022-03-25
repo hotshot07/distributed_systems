@@ -1,5 +1,6 @@
 from flask import Flask
 from service import get_test_results
+from utils import country_list
 
 app = Flask(__name__)
 
@@ -11,8 +12,10 @@ def view_results(country: str):
     :param country: Country whose test results are asked
     :return: json data
     """
-
-    return get_test_results(country=country.capitalize())
+    if country.capitalize() in country_list:
+        return get_test_results(country=country.capitalize())
+    else:
+        return f"Invalid country name {country}"
 
 
 if __name__ == "__main__":
