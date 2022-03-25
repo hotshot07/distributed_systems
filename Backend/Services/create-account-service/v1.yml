@@ -16,14 +16,44 @@ spec:
     spec:
       containers:
       - name: cas 
-        image: hotshot07/create-account-service:latest
+        image: distributed07/create-account-service:latest
         imagePullPolicy: Always
         workingDir: /app
         command: ["/bin/sh","-c"]
         args: ["gunicorn app:app --bind 127.0.0.1:5000"]
         ports:
         - containerPort: 5000
-
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: AWS_SECRET_ACCESS_KEY
+        - name: REGION_NAME
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: REGION_NAME
+        - name: COUNTRY_ADO_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: COUNTRY_ADO_ID
+        - name: USER_PROFILE
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: USER_PROFILE
+        - name: ACCOUNT_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: ACCOUNT_ID
 ---
 apiVersion: v1
 kind: Service

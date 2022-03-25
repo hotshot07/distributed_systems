@@ -2,8 +2,6 @@ from flask import Flask, jsonify, request
 from dynamo_handler import *
 from models import *
 import logging
-# logging.basicConfig(level=logging.DEBUG, filename='app.log' ,filemode='w')
-
 
 app = Flask(__name__)
 
@@ -65,6 +63,7 @@ if __name__ != '__main__':
     gunicorn_logger = logging.getLogger('gunicorn.error')
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
+    app.logger.info("Create account service is now running!")
 
 if __name__ == "__main__":
     app.logger.setLevel(logging.DEBUG)
