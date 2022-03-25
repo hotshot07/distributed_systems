@@ -45,7 +45,7 @@ kind: Service
 metadata:
   name: schedule-athlete-test-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: sats
   ports:

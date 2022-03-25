@@ -45,7 +45,7 @@ kind: Service
 metadata:
   name: view-test-results-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: vtrs
   ports:
