@@ -27,7 +27,7 @@ export default function SignIn() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log("Should send auth request to [*] with ${data.email} ${data.password}")
+    console.log(`Should send auth request to [*] with ${data.email} ${data.password}`)
   };
 
   function sayHello() {

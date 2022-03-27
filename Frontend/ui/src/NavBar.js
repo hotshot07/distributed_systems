@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import { useNavigate } from "react-router-dom";
 
-const pages = ['Home', 'Organisation', 'Tests', 'What does ADO stand for again', 'I hate react but it works to be fair'];
+const pages = ['Home', 'Organisation', 'Tests'];
 
 const ResponsiveAppBar = () => {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const ResponsiveAppBar = () => {
               </Button>
             ))}
           </Box>
-          // TODO: Add drop down menu for login profile etc.
+          / TODO: Add drop down menu for login profile etc.
         </Toolbar>
       </Container>
     </AppBar>
