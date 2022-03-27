@@ -17,7 +17,8 @@ def token_required(f):
             return jsonify({"message": "Token is missing!"}), 401
 
         try:
-            data = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
+            data = jwt.decode(
+                token, app.config["SECRET_KEY"], algorithms=["HS256"])
         except:
             return jsonify({"message": "Token is invalid"}), 401
 
@@ -52,7 +53,8 @@ def login():
         )
         return jsonify({"token": token})
     return make_response(
-        "Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login Required"'}
+        "Could not verify", 401, {
+            "WWW-Authenticate": 'Basic realm="Login Required"'}
     )
 
 
