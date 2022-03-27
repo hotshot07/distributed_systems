@@ -73,8 +73,10 @@ def login():
     username = request.authorization.username
     password = request.authorization.password
 
+    username=username.strip()
     # Check if attempted login is with email. Query UserProfiles table for ID if email.
     if is_email(username):
+        print(username)
         response = UserProfileTable.query(
             IndexName="Email-index", KeyConditionExpression=Key("Email").eq(username)
         )
