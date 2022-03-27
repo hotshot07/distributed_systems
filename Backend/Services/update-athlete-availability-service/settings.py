@@ -17,3 +17,4 @@ INVALID_TIME_RESOLUTION_GIVEN = 'The user has supplied an incorrect time format,
 INVALID_TIME_FORMAT_GIVEN = 'The user has not given time in the correct format, please give utc time in iso (8601) format'
 INVALID_COUNTRY_GIVEN = 'The user given a country which is not present on our system'
 
+EXPIRY_IN_DAYS = 30

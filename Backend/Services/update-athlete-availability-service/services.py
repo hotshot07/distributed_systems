@@ -19,16 +19,10 @@ def connect():
 
 def put_item(availability: AthleteAvailability, dynamo):
     table = dynamo.Table(ATHLETE_AVAILABILITY_TABLE)
-
+    availability_item = availability.__dict__
     try:
         response = table.put_item(
-            Item={
-                'athlete_id': availability.athlete_id,
-                'date': availability.date,
-                'available_time': availability.available_time,
-                'location_address': availability.location_address,
-                'location_country': availability.location_country
-            }
+            Item=availability_item
         )
         return response
 
@@ -36,8 +30,7 @@ def put_item(availability: AthleteAvailability, dynamo):
         raise e
 
 
-#update availability
-def update_availability(availability):
+def create_availability(availability):
     dynamo = connect()
     resp = put_item(availability, dynamo=dynamo)
     return resp
