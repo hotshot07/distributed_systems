@@ -2,6 +2,7 @@ import datetime
 from functools import wraps
 from pprint import pprint
 import logging
+import re
 
 import boto3
 import flask
@@ -68,25 +69,34 @@ def login():
     if not request.authorization or not request.authorization.username or not request.authorization.password:  
         return make_response('could not verify', 401, {'Authentication': 'login required"'})    
 
+    # Aquire username and password from auth headers
     username = request.authorization.username
     password = request.authorization.password
 
-    response = UserProfileTable.query(
-        IndexName="Email-index", KeyConditionExpression=Key("Email").eq(username)
-    )
+    # Check if attempted login is with email. Query UserProfiles table for ID if email.
+    if is_email(username):
+        response = UserProfileTable.query(
+            IndexName="Email-index", KeyConditionExpression=Key("Email").eq(username)
+        )
 
-    if response["Count"] == 0:
-        return jsonify({"message": "User does not exist"}), 404
+        if response["Count"] == 0: return jsonify({"message": "User does not exist"}), 404
 
-    user_id = response["Items"][0]["Id"]
-
+        user_id = response["Items"][0]["Id"]
+    else:
+        user_id = username
+    
+    # Retrieve hashed password from AuthTable for user-id.
     response = AuthTable.query(
         IndexName="userid-index", KeyConditionExpression=Key("userid").eq(user_id)
     )
+
+    # If no entries in Auth table found, return error.
+    if response["Count"] == 0: return jsonify({"message": "User does not exist"}), 404
+    
     hashed_password = response["Items"][0]["hashed_password"]
-
+    
+    # Check the password hash vs the password from the auth headers.
     if check_password_hash(hashed_password, password):
-
         token = jwt.encode(
             {
                 "user": username,
@@ -94,15 +104,17 @@ def login():
             },
             app.config["SECRET_KEY"],
         )
-        pprint(token)
+        # Create the response with the JWT in both cookies and X-Access-Token header.
         response = make_response("Token returned. User Authenticated.")
         response.headers["X-Access-Token"] = token
         response.set_cookie('Access Token', token)
-        print(response.headers)
+
         return response
     return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login Required"'})
 
-
+# Check if supplied login credential is an email.
+def is_email(email_or_id):
+    return any(re.findall("([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id))
 
 if __name__ == "__main__":
     app.run(debug=True)
