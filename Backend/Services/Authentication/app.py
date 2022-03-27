@@ -1,6 +1,7 @@
 import datetime
 from functools import wraps
 from pprint import pprint
+import logging
 
 import boto3
 import flask
@@ -33,13 +34,9 @@ UserProfileTable = resource.Table(USER_PROFILE)
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-
         token = None
-        print(request)
-        print(flask.request.headers.get("x-access-tokens"))
-        if "x-access-tokens" in request.headers:
-            token = request.headers["x-access-tokens"]
-        print(token)
+        if "X-Access-Token" in request.headers:
+            token = request.headers["X-Access-Token"]
 
         if not token:
             return jsonify({"message": "Token is missing!"}), 401
@@ -63,19 +60,17 @@ def unprotected():
 @app.route("/protected")
 @token_required
 def protected():
-    return jsonify({"message": "This is only available if you authenticate"})
+    return jsonify({"message": "This is only available if you authenticated"})
 
 
-@app.route("/login/<username>/<password>")
-def login(username, password):
+@app.route("/login", methods=['POST'])
+def login():
+    if not request.authorization or not request.authorization.username or not request.authorization.password:  
+        return make_response('could not verify', 401, {'Authentication': 'login required"'})    
 
-    # id from req
-    # Get id and hashed password from dyn
-    # If returned object is populated cnt
-    # else throw return error
+    username = request.authorization.username
+    password = request.authorization.password
 
-    # Hash the password that came in as req
-    # check if hashed_pass from dyn == hash(pass_from_request)
     response = UserProfileTable.query(
         IndexName="Email-index", KeyConditionExpression=Key("Email").eq(username)
     )
@@ -84,14 +79,13 @@ def login(username, password):
         return jsonify({"message": "User does not exist"}), 404
 
     user_id = response["Items"][0]["Id"]
-    pprint(user_id)
 
     response = AuthTable.query(
         IndexName="userid-index", KeyConditionExpression=Key("userid").eq(user_id)
     )
-    pprint(response["Items"][0]["hashed_password"])
+    hashed_password = response["Items"][0]["hashed_password"]
 
-    if check_password_hash(response["Items"][0]["hashed_password"], password):
+    if check_password_hash(hashed_password, password):
 
         token = jwt.encode(
             {
@@ -101,11 +95,13 @@ def login(username, password):
             app.config["SECRET_KEY"],
         )
         pprint(token)
-        response = make_response("hello")
-        response.headers["x-access-tokens"] = token
+        response = make_response("Token returned. User Authenticated.")
+        response.headers["X-Access-Token"] = token
+        response.set_cookie('Access Token', token)
         print(response.headers)
         return response
     return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login Required"'})
+
 
 
 if __name__ == "__main__":
