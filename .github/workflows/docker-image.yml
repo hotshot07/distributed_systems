@@ -17,6 +17,9 @@ env:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Backend/Services/schedule-athlete-test-service
     steps:
       -
         name: Set up QEMU
@@ -37,4 +40,3 @@ jobs:
           push: true
           tags: distributed07/schedule-athlete-test-service:latest
           platforms: linux/arm64,linux/amd64
-          working-directory: Backend/Services/schedule-athlete-test-service
