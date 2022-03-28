@@ -17,5 +17,7 @@ INVALID_TIME_RESOLUTION_GIVEN = 'The user has supplied an incorrect time format,
 INVALID_TIME_FORMAT_GIVEN = 'The user has not given time in the correct format, please give utc time in iso (8601) format'
 INVALID_COUNTRY_GIVEN = 'The user given a country which is not present on our system'
 NOT_ATHLETE_ID = 'Please supply athlete id'
+TIME_TOO_EARLY = 'The time supplied is too early, please supply a time at least 7 days from today'
 
 EXPIRY_IN_DAYS = 30
+TIME_DELTA_WINDOW_IN_DAYS = 7

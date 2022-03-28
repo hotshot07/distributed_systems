@@ -24,11 +24,16 @@ class AthleteAvailability:
             datetime_utc = datetime.datetime.fromisoformat(datetime_string)
             if ( (getattr(datetime_utc, 'minute', None) not in  [0, None] ) or (getattr(datetime_utc, 'second', None) not in  [0, None] ) or (getattr(datetime_utc, 'mircosecond', None) not in  [0, None] ) ):
                 raise Exception(INVALID_TIME_RESOLUTION_GIVEN)
+            datetime_today = datetime.datetime.utcnow()
+            
+            if (datetime_utc < (datetime_today + datetime.timedelta(days=TIME_DELTA_WINDOW_IN_DAYS))):
+                print(datetime_utc)
+                raise Exception(TIME_TOO_EARLY)
             else:
                 self.date = datetime_utc.date().isoformat()
                 self.available_time = datetime_utc.time().isoformat()
-        except Exception:
-            raise Exception(INVALID_TIME_FORMAT_GIVEN)
+        except Exception as e:
+            raise e
 
     
     def __verify_country(self, country):
