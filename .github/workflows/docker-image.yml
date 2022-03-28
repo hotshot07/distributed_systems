@@ -5,21 +5,10 @@ on:
     branches: [ main,pipeline-image ]
   pull_request:
     branches: [ main ]
-    
-env:
-  ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }} 
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-  REGION_NAME: ${{ secrets.REGION_NAME }} 
-  COUNTRY_ADO_ID: ${{ secrets.COUNTRY_ADO_ID }} 
-  USER_PROFILE: ${{ secrets.USER_PROFILE }} 
   
 jobs:
   docker:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./Backend/Services/schedule-athlete-test-service
     steps:
       -
         name: Set up QEMU
@@ -40,3 +29,4 @@ jobs:
           push: true
           tags: distributed07/schedule-athlete-test-service:latest
           platforms: linux/arm64,linux/amd64
+          context: ./Backend/Services/schedule-athlete-test-service
