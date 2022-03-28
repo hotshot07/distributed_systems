@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Build Docker Images CI
 
 on:
   push:
@@ -36,5 +36,5 @@ jobs:
         with:
           push: true
           tags: distributed07/schedule-athlete-test-service:latest
-          platform: linux/arm64,linux/amd64
-          context: Backend/Services/schedule-athlete-test-service
+          platforms: linux/arm64,linux/amd64
+          working-directory: Backend/Services/schedule-athlete-test-service
