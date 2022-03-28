@@ -29,4 +29,4 @@ jobs:
           push: true
           tags: distributed07/schedule-athlete-test-service:latest
           platforms: linux/arm64,linux/amd64
-          context: Backend/Services/schedule-athlete-test-service
+          context: ./backend/services/schedule-athlete-test-service
