@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
+        name: List directory
+        run: ls -la
+      -
         name: Open directory
         run: cd Backend/Services/schedule-athlete-test-service
       -
