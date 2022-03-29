@@ -3,6 +3,7 @@ name: Build Docker Images CI
 on:
   push:
     branches: [ main ]
+    paths: Backend/Services/update-athlete-availability-service/**
   
 jobs:
   docker:
@@ -24,10 +25,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Build and push schedule-athlete-test-service
+        name: Build and push update-athlete-availability-service
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: distributed07/schedule-athlete-test-service:latest
+          tags: distributed07/update-athlete-availability-service:latest
           platforms: linux/arm64,linux/amd64
-          context: ./Backend/Services/schedule-athlete-test-service
+          context: ./Backend/Services/update-athlete-availability-service
