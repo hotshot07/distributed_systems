@@ -1,6 +1,11 @@
 
 # Request format for update availability
 
+
+## Create athlete availability item
+
+POST: url/update-athlete-availability
+
 [{
 	
 	"athlete_id": "12345",
@@ -8,6 +13,13 @@
 	"location": "Dublin 8",
 	"location_country" : "Ireland"
 }]
+
+
+## view athlete avaianility
+
+GET: url/view-athlete-availability/<athlete_id>
+
+
 
 ### datetimeUTC
 
