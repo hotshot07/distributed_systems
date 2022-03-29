@@ -48,7 +48,7 @@ def view_availability(athlete_id: str):
         try:
             if athlete_id:
                 resp = services.get_availability(athlete_id)
-                return make_response(jsonify(resp),403)
+                return make_response(jsonify(resp), 200)
             else: 
                 return make_response(NOT_ATHLETE_ID, 403)
         except Exception as e:
