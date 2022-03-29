@@ -3,6 +3,7 @@ name: Build Docker Images CI
 on:
   push:
     branches: [ main ]
+    paths: Backend/Services/schedule-athlete-test-service/**
   
 jobs:
   docker:
