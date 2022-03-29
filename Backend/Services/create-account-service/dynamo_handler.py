@@ -21,8 +21,10 @@ client = boto3.client(
     region_name           = REGION_NAME,
 )
 
+
 UserProfile = resource.Table(USER_PROFILE)
 AuthTable = resource.Table(AUTH_TABLE)
+CountryAdo = resource.Table(COUNTRY_ADO)
 
 #this function UPDATES an already existing account with the new information
 def create_user_if_not_exists(**kwargs):
@@ -82,14 +84,24 @@ def check_id(user_id, organization):
             logging.error(f"User {user_id} is not an active orchestrator")
             return False
         
+def check_country(country):
+    try:
+        response = CountryAdo.query(
+            KeyConditionExpression=Key('Country').eq(country)
+        )
         
+    except ClientError as e:
+        logging.error(e.response['Error']['Message'])
+        logging.info(f"Country {country} does not exist")
+        return False
+    else:
+        return True
 
 def create_inactive_account(item, account_type, organization):
     
     user_id = item['Id']
-    #hash the password??? 
-    password = item['Password']
     
+    password = item['Password']
     hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
     
     try:

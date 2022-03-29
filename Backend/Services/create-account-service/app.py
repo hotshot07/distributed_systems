@@ -3,11 +3,12 @@ from dynamo_handler import *
 from models import *
 import logging
 from utils import get_id_and_passwords
-from countries import country_set
 
 app = Flask(__name__)
 
-# fore external + internal requests
+ADMIN_ALLOWED_ACCOUNTS = set(['Orchestrator', 'WADA'])
+
+# for external + internal requests
 @app.route("/update-athlete-account", methods=['GET', 'POST'])
 def create_athlete_account():
     if request.method == 'POST':
@@ -60,42 +61,51 @@ def create_tester_account():
         return create_user_if_not_exists(**tester_model.account_dict())
 
 
-
+#POST
 # {
-#     "Organization": "Ireland ADO",
+#     "Country": "Ireland",
 #     "AccountType": "Orchestrator",
 # }
+
+# returns 
+# {
+#     "Id": "22132720116",
+#     "Password": "8e987681"
+# }
+
 @app.route("/admin-inactive-accounts", methods=['POST'])
 def admin_inactive_accounts():
     if request.method == 'POST':
         data = request.get_json()
         
-        organization = data.get('Organization')
+        country = data.get('Country')
         account_type = data.get('AccountType')
         
         app.logger.info(f"Recieved request to create account {data}")
         
-        if not organization or not account_type:
+        if account_type not in ADMIN_ALLOWED_ACCOUNTS:
+            return jsonify({"error": "Invalid account type"}), 400
+        
+        if not country or not account_type:
             return jsonify({"error": "Missing data parameters"}), 400
         
-        country = organization.replace('ADO', '')
+        if not check_country(country):
+            return jsonify({"error": "Invalid country"}), 400
         
-        if country not in country_set:
-            return jsonify({"error": "Invalid organization"}), 400
+        # all checks passed! 
+        id_password_list = get_id_and_passwords(1)
         
+        account = id_password_list[0]
         
+        organization = country + ' ' + 'ADO'
         
+        current_request = create_inactive_account(account, account_type, organization)
         
+        if current_request.status_code != 200:
+            return jsonify({"error": "Could not create account"}), 400
         
+        return jsonify(account), 200
         
-        
-        
-
-
-
-
-
-
 
 # will create n number of athlete accounts, to be used by the orchestrator
 # expecting orchestrator id and number of accounts to create in JSON

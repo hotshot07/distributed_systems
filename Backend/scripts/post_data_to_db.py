@@ -12,37 +12,37 @@ resource = boto3.resource(
 )
 
 
-CountryAdoId = resource.Table(COUNTRY_ADO_ID_TABLE)
+CountryAdo = resource.Table("CountryAdo")
 UserProfile = resource.Table(USER_PROFILE)
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     
-    for country in create_country_ado_dict():
-        try:
-            response = CountryAdoId.put_item(
-                Item = country
-            )
-            time.sleep(1)
-        except Exception as e:
-            print(e.args)
+#     for country in create_country_ado_dict():
+#         try:
+#             response = CountryAdo.put_item(
+#                 Item = country
+#             )
+#             time.sleep(1)
+#         except Exception as e:
+#             print(e.args)
             
-        print(response)
+#         print(response)
         
         
-def auth_function(userid,pwd):
+# def auth_function(userid,pwd):
     
-    # check if creds exist in dynamo 
+#     # check if creds exist in dynamo 
     
-    userid_pwd = {
-        'userid': userid,
-        'pwd': pwd
-    }
+#     userid_pwd = {
+#         'userid': userid,
+#         'pwd': pwd
+#     }
     
-    # db has userid, pwd, hulib (has user logged in before)
+#     # db has userid, pwd, hulib (has user logged in before)
     
-    response = CountryAdoId.query(
-                Item = userid_pwd
-            )
+#     response = CountryAdoId.query(
+#                 Item = userid_pwd
+#             )
     
     # if item exists, check if hulib is true
     # if false, when returning return "inital login"

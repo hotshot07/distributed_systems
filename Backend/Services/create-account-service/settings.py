@@ -7,3 +7,4 @@ REGION_NAME           = os.getenv("REGION_NAME")
 
 USER_PROFILE = "UserProfile"
 AUTH_TABLE = "Auth"
+COUNTRY_ADO = "CountryAdo"
