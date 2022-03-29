@@ -2,12 +2,13 @@ from flask import Flask, jsonify, request
 from dynamo_handler import *
 from models import *
 import logging
-from utils import get_id_and_passowrds
+from utils import get_id_and_passwords
+from countries import country_set
 
 app = Flask(__name__)
 
 # fore external + internal requests
-@app.route("/create-athlete-account", methods=['GET', 'POST'])
+@app.route("/update-athlete-account", methods=['GET', 'POST'])
 def create_athlete_account():
     if request.method == 'POST':
         
@@ -25,7 +26,7 @@ def create_athlete_account():
 
 
 # this account type is for internal requests only (IT admin)
-@app.route("/create-orch-account", methods=['GET', 'POST'])
+@app.route("/update-orch-account", methods=['GET', 'POST'])
 def create_orchestrator_account():
     if request.method == 'POST':
         
@@ -42,7 +43,7 @@ def create_orchestrator_account():
         return create_user_if_not_exists(**orchestrator_model.account_dict())
 
 # this account type is for internal requests only (it admin == us)
-@app.route("/create-tester-account", methods=['GET', 'POST'])
+@app.route("/update-tester-account", methods=['GET', 'POST'])
 def create_tester_account():
     if request.method == 'POST':
         
@@ -57,6 +58,44 @@ def create_tester_account():
             return jsonify({"error": "Missing data parameters"}), 400
 
         return create_user_if_not_exists(**tester_model.account_dict())
+
+
+
+# {
+#     "Organization": "Ireland ADO",
+#     "AccountType": "Orchestrator",
+# }
+@app.route("/admin-inactive-accounts", methods=['POST'])
+def admin_inactive_accounts():
+    if request.method == 'POST':
+        data = request.get_json()
+        
+        organization = data.get('Organization')
+        account_type = data.get('AccountType')
+        
+        app.logger.info(f"Recieved request to create account {data}")
+        
+        if not organization or not account_type:
+            return jsonify({"error": "Missing data parameters"}), 400
+        
+        country = organization.replace('ADO', '')
+        
+        if country not in country_set:
+            return jsonify({"error": "Invalid organization"}), 400
+        
+        
+        
+        
+        
+        
+        
+        
+
+
+
+
+
+
 
 # will create n number of athlete accounts, to be used by the orchestrator
 # expecting orchestrator id and number of accounts to create in JSON
@@ -80,13 +119,29 @@ def get_n_accounts():
         app.logger.info(f"Recieved request to create {number_of_accounts} accounts by ID {user_id}")
         
         if not check_id(user_id, organization):
-            return jsonify({"error": "Invalid user ID or organization"}), 400 
+            return jsonify({"error": "Invalid User ID or Organization"}), 400 
         
+        id_password_list = get_id_and_passwords(number_of_accounts)
         
-        # create_inactive_athelete_accounts(get_id_and_passowrds(number_of_accounts), data['AccountType'])
+        # store it in auth table + create inactive profiles
         
-        return jsonify("hi")
+        accounts_created = []
         
+        for item in id_password_list:
+            current_request = create_inactive_account(item, account_type, organization)
+            if current_request.status_code != 200:
+                app.logger.error(f"Failed to create account for {item}")
+                return jsonify({"error": "Failed to create all accounts"}), 400
+            else:
+                accounts_created.append(item)
+        
+        return jsonify(accounts_created), 200
+
+
+
+
+
+
 
 
 

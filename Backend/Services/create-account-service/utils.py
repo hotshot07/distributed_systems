@@ -7,14 +7,12 @@ generate_ten_digit_ids  = lambda: random.randint(10000000000, 99999999999)
 generate_password = lambda : str(secrets.token_hex(4))
 
 
-def get_id_and_passowrds(n):
+def get_id_and_passwords(n):
     id_and_passwords = []
     
-    for i in range(n):
+    for _ in range(n):
         id_and_passwords.append({
             'Id': str(generate_ten_digit_ids()),
             'Password': generate_password()
         })
     return id_and_passwords
-
-

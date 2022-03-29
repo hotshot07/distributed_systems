@@ -5,6 +5,7 @@ from boto3.dynamodb.conditions import Key
 from flask import Response
 import logging
 from pprint import pprint 
+from werkzeug.security import generate_password_hash, check_password_hash
 
 resource = boto3.resource(
     'dynamodb',
@@ -13,7 +14,15 @@ resource = boto3.resource(
     region_name           = REGION_NAME,
 )
 
+client = boto3.client(
+    'dynamodb',
+    aws_access_key_id     = AWS_ACCESS_KEY_ID,
+    aws_secret_access_key = AWS_SECRET_ACCESS_KEY,
+    region_name           = REGION_NAME,
+)
+
 UserProfile = resource.Table(USER_PROFILE)
+AuthTable = resource.Table(AUTH_TABLE)
 
 #this function UPDATES an already existing account with the new information
 def create_user_if_not_exists(**kwargs):
@@ -64,7 +73,7 @@ def check_id(user_id, organization):
         return False
     else:
         if response['Count'] == 0:
-            logging.error(f"User {user_id} does not exist")
+            logging.error(f"User {user_id} does not exist or doesnt match organization {organization}")
             return False
         else:
             profile = response['Items'][0]
@@ -72,11 +81,64 @@ def check_id(user_id, organization):
                 return True
             logging.error(f"User {user_id} is not an active orchestrator")
             return False
+        
+        
+
+def create_inactive_account(item, account_type, organization):
+    
+    user_id = item['Id']
+    #hash the password??? 
+    password = item['Password']
+    
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
+    
+    try:
+        response = client.transact_write_items(
+            TransactItems=[
+                {
+                    'Put': {
+                        'TableName': AUTH_TABLE,
+                        'Item': {
+                            'userid': {
+                                'S': str(user_id),
+                            },
+                            'hashed_password': {
+                                'S': str(hashed_password)
+                            } 
+                        }
+                    }
+                },
+                {
+                    'Put': {
+                        'TableName': USER_PROFILE,
+                        'Item': {
+                            'Organization': {
+                                'S': str(organization),
+                            },
+                            'Id': {
+                                'S': str(user_id),
+                            },
+                            'AccountType': {
+                                'S': str(account_type),
+                            },
+                            'AccountStatus':{
+                                'S': 'Inactive'
+                            },
+                        } ,
+                        'ConditionExpression': 'attribute_not_exists(Id)'
+                    }
+                }
+            ]
+        )
+    except ClientError as e:
+        logging.error(e.response['Error']['Message'])
+        return Response("Error creating account", 400)
+    else:
+        return Response("Account created", 200) 
+    
 
 
-#this function CREATES a new account 
-# def create_inactive_athelete_accounts(list_of_accounts, type_of_account):
     
-#     # list of accoutns is a list of dictionaries with userid/pwd combo 
     
-#     for user_item in list_of_accounts:
+    
+    

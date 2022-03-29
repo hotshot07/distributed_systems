@@ -15,3 +15,28 @@ curl -X POST http://127.0.0.1/create-<type_of_acc>-account
     "PhoneNumber": ""
     }'
 ```
+
+``` python
+# ID password combo to test 
+
+# Athelete
+# [
+#     {
+#         "Id": "37189527454",
+#         "Password": "895887f1"
+#     }
+# ]
+
+# Tester
+
+# [
+#     {
+#         "Id": "56297746115",
+#         "Password": "68286860"
+#     },
+#     {
+#         "Id": "75746108831",
+#         "Password": "c9cb12c4"
+#     }
+# ]
+```
