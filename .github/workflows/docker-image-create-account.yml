@@ -2,8 +2,9 @@ name: Build Docker Images CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ mark/update ]
     paths: Backend/Services/create-account-service/**
+    
 jobs:
   docker:
     runs-on: ubuntu-latest
