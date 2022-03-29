@@ -23,7 +23,7 @@ def create_athlete_account():
             app.logger.error("Missing required fields")
             return jsonify({"error": "Missing data parameters"}), 400
 
-        return create_user_if_not_exists(**athlete_model.account_dict())
+        return update_user_if_exists(**athlete_model.account_dict())
 
 
 # this account type is for internal requests only (IT admin)
@@ -41,7 +41,7 @@ def create_orchestrator_account():
             app.logger.error("Missing required fields")
             return jsonify({"error": "Missing or invalid data parameters"}), 400
 
-        return create_user_if_not_exists(**orchestrator_model.account_dict())
+        return update_user_if_exists(**orchestrator_model.account_dict())
 
 # this account type is for internal requests only (it admin == us)
 @app.route("/update-tester-account", methods=['GET', 'POST'])
@@ -58,7 +58,7 @@ def create_tester_account():
             app.logger.error("Missing required fields")
             return jsonify({"error": "Missing data parameters"}), 400
 
-        return create_user_if_not_exists(**tester_model.account_dict())
+        return update_user_if_exists(**tester_model.account_dict())
 
 
 #POST
@@ -104,8 +104,8 @@ def admin_inactive_accounts():
         if current_request.status_code != 200:
             return jsonify({"error": "Could not create account"}), 400
         
-        return jsonify(account), 200
-        
+        # too keep the same format as down below
+        return jsonify(id_password_list), 200
 
 # will create n number of athlete accounts, to be used by the orchestrator
 # expecting orchestrator id and number of accounts to create in JSON

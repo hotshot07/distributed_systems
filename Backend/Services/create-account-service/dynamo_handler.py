@@ -27,7 +27,7 @@ AuthTable = resource.Table(AUTH_TABLE)
 CountryAdo = resource.Table(COUNTRY_ADO)
 
 #this function UPDATES an already existing account with the new information
-def create_user_if_not_exists(**kwargs):
+def update_user_if_exists(**kwargs):
     try:
         
         pprint(kwargs)
@@ -95,6 +95,8 @@ def check_country(country):
         logging.info(f"Country {country} does not exist")
         return False
     else:
+        if response['Count'] == 0:
+            return False
         return True
 
 def create_inactive_account(item, account_type, organization):

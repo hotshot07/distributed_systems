@@ -39,4 +39,11 @@ curl -X POST http://127.0.0.1/create-<type_of_acc>-account
 #         "Password": "c9cb12c4"
 #     }
 # ]
+
+# Orchestrator 
+# {
+#     "Id": "22132720116",
+#     "Password": "8e987681"
+# }
+
 ```
