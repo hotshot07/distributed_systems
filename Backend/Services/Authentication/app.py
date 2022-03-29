@@ -1,4 +1,5 @@
 import datetime
+import logging
 import re
 from functools import wraps
 
@@ -114,3 +115,10 @@ def is_email(email_or_id):
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
+
+if __name__ != "__main__":
+    # if we are not running directly, we set the loggers
+    gunicorn_logger = logging.getLogger("gunicorn.error")
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+    app.logger.info("Authentication service is now running!")
