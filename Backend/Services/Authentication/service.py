@@ -1,4 +1,6 @@
 import boto3
+from boto3.dynamodb.conditions import Key
+
 from settings import (
     AUTH,
     AWS_ACCESS_KEY_ID,
@@ -17,3 +19,15 @@ resource = boto3.resource(
 
 AuthTable = resource.Table(AUTH)
 UserProfileTable = resource.Table(USER_PROFILE)
+
+
+def query_user_profile_table(username):
+    return UserProfileTable.query(
+        IndexName="Email-index", KeyConditionExpression=Key("Email").eq(username)
+    )
+
+
+def query_auth_table(user_id):
+    return AuthTable.query(
+        IndexName="userid-index", KeyConditionExpression=Key("userid").eq(user_id)
+    )

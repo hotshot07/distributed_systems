@@ -3,15 +3,15 @@ import re
 from functools import wraps
 
 import jwt
-from boto3.dynamodb.conditions import Key
 from flask import Flask, jsonify, make_response, request
 from werkzeug.security import check_password_hash
 
-from service import AuthTable, UserProfileTable
+from service import query_auth_table, query_user_profile_table
 
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "thisisthesecretkey"
+TOKEN_EXPIRY_MINUTES = 30
 
 
 def token_required(f):
@@ -25,7 +25,8 @@ def token_required(f):
             return jsonify({"message": "Token is missing!"}), 401
 
         try:
-            data = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
+            data = jwt.decode(
+                token, app.config["SECRET_KEY"], algorithms=["HS256"])
         except:
             return jsonify({"message": "Token is invalid"}), 401
 
@@ -63,21 +64,17 @@ def login():
     username = username.strip()
     # Check if attempted login is with email. Query UserProfiles table for ID if email.
     if is_email(username):
-        response = UserProfileTable.query(
-            IndexName="Email-index", KeyConditionExpression=Key("Email").eq(username)
-        )
+        response = query_user_profile_table(username)
 
         if response["Count"] == 0:
-            return jsonify({"message": "User does not exist"}), 404
+            return jsonify({"message": "User does not exist!"}), 404
 
         user_id = response["Items"][0]["Id"]
     else:
         user_id = username
 
     # Retrieve hashed password from AuthTable for user-id.
-    response = AuthTable.query(
-        IndexName="userid-index", KeyConditionExpression=Key("userid").eq(user_id)
-    )
+    response = query_auth_table(user_id)
 
     # If no entries in Auth table found, return error.
     if response["Count"] == 0:
@@ -90,7 +87,8 @@ def login():
         token = jwt.encode(
             {
                 "user": username,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
+                "exp": datetime.datetime.utcnow()
+                + datetime.timedelta(minutes=TOKEN_EXPIRY_MINUTES),
             },
             app.config["SECRET_KEY"],
         )
@@ -101,18 +99,18 @@ def login():
 
         return response
     return make_response(
-        "Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login Required"'}
+        "Could not verify", 401, {
+            "WWW-Authenticate": 'Basic realm="Login Required"'}
     )
 
 
 # Check if supplied login credential is an email.
-
-
 def is_email(email_or_id):
     return any(
-        re.findall("([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id)
+        re.findall(
+            "([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id)
     )
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=5000, debug=True)
