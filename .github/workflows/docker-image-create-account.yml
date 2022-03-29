@@ -24,10 +24,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Build and push update-athlete-availability-service
+        name: Build and push create-account-service
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: distributed07/update-athlete-availability-service:latest
+          tags: distributed07/create-account-service:latest
           platforms: linux/arm64,linux/amd64
-          context: ./Backend/Services/update-athlete-availability-service
+          context: ./Backend/Services/create-account-service
