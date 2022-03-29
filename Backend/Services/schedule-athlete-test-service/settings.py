@@ -1,9 +1,8 @@
-from tkinter import EXCEPTION
-from decouple import config
+import os
 
-AWS_ACCESS_KEY_ID     = config("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
-REGION_NAME           = config("REGION_NAME")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+REGION_NAME = os.getenv("REGION_NAME")
 
 ATHLETE_AVAILABILITY_TABLE = 'AthleteAvailability'
 ATHELTE_TEST_TABLE = 'AthleteTest'
