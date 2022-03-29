@@ -1,9 +1,11 @@
+import logging
 from flask import Flask, request, make_response, jsonify
 
 import services
 import models
 import forms
 from settings import *
+import logging
 
 app = Flask(__name__)
 
@@ -60,3 +62,11 @@ def view_availability(athlete_id: str):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
+
+if __name__ != '__main__':
+    # if we are not running directly, we set the loggers
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+    app.logger.info("Create account service is now running!")
