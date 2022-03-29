@@ -3,7 +3,7 @@ name: Build Docker Images CI
 on:
   push:
     branches: [ mark/update ]
-    paths: Backend/Services/update-athlete-availability-service
+    paths: Backend/Services/update-athlete-availability-service/**
   
 jobs:
   docker:
