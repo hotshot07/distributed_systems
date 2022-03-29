@@ -2,11 +2,9 @@ from flask import Flask, jsonify, request
 from dynamo_handler import *
 from models import *
 import logging
-from utils import get_id_and_passwords
+from utils import get_id_and_passwords, error_message
 
 app = Flask(__name__)
-
-ADMIN_ALLOWED_ACCOUNTS = set(['Orchestrator', 'WADA'])
 
 ###
 # update routes UPDATE an existing inactive account in user_profile
@@ -21,12 +19,12 @@ def create_athlete_account():
         data = request.get_json()
         athlete_model = Athlete(**data)
 
-        app.logger.info(f"Recieved create account request for athlete {data}")
+        app.logger.info(f"Recieved update account request for athlete {data}")
 
         # will return false if any of the required fields are missing
         if not athlete_model.check():
             app.logger.error("Missing required fields")
-            return jsonify({"error": "Missing data parameters"}), 400
+            return jsonify(error_message("Missing data parameters")), 400
 
         return update_user_if_exists(**athlete_model.account_dict())
 
@@ -39,12 +37,12 @@ def create_orchestrator_account():
         orchestrator_model = Orchestrator(**data)
 
         app.logger.info(
-            f"Recieved create account request for orchestrator {data}")
+            f"Recieved update account request for orchestrator {data}")
 
         # will return false if any of the required fields are missing
         if not orchestrator_model.check():
             app.logger.error("Missing required fields")
-            return jsonify({"error": "Missing or invalid data parameters"}), 400
+            return jsonify(error_message("Missing or invalid data parameters")), 400
 
         return update_user_if_exists(**orchestrator_model.account_dict())
 
@@ -56,27 +54,15 @@ def create_tester_account():
         data = request.get_json()
         tester_model = Tester(**data)
 
-        app.logger.info(f"Recieved create account request for tester {data}")
+        app.logger.info(f"Recieved update account request for tester {data}")
 
         # will return false if any of the required fields are missing
         if not tester_model.check():
             app.logger.error("Missing required fields")
-            return jsonify({"error": "Missing data parameters"}), 400
+            return jsonify(error_message("Missing data parameters")), 400
 
         return update_user_if_exists(**tester_model.account_dict())
 
-
-# POST
-# {
-#     "Country": "Ireland",
-#     "AccountType": "Orchestrator",
-# }
-
-# returns
-# {
-#     "Id": "22132720116",
-#     "Password": "8e987681"
-# }
 
 @app.route("/admin-inactive-accounts", methods=['POST'])
 def admin_inactive_accounts():
@@ -89,13 +75,13 @@ def admin_inactive_accounts():
         app.logger.info(f"Recieved request to create account {data}")
 
         if account_type not in ADMIN_ALLOWED_ACCOUNTS:
-            return jsonify({"error": "Invalid account type"}), 400
+            return jsonify(error_message("Invalid account type")), 400
 
         if not country or not account_type:
-            return jsonify({"error": "Missing data parameters"}), 400
+            return jsonify(error_message("Missing data parameters")), 400
 
         if not check_country(country):
-            return jsonify({"error": "Invalid country"}), 400
+            return jsonify(error_message("Invalid country")), 400
 
         # all checks passed!
         id_password_list = get_id_and_passwords(1)
@@ -108,20 +94,10 @@ def admin_inactive_accounts():
             account, account_type, organization)
 
         if current_request.status_code != 200:
-            return jsonify({"error": "Could not create account"}), 400
+            return jsonify(error_message("Could not create account")), 400
 
         # too keep the same format as down below
         return jsonify(id_password_list), 200
-
-# will create n number of athlete accounts, to be used by the orchestrator
-# expecting orchestrator id and number of accounts to create in JSON
-# {
-#     "Id": "68011495473",
-#     "Organization": "Canada ADO",
-#     "NumberOfAccounts": 5,
-#     "AccountType": "Athlete"
-# }
-# orchestrator can create accounts for tester or athlete (Specify account type in JSON))
 
 
 @app.route("/create-n-accounts", methods=['POST'])
@@ -138,7 +114,7 @@ def get_n_accounts():
             f"Recieved request to create {number_of_accounts} accounts by ID {user_id}")
 
         if not check_id(user_id, organization):
-            return jsonify({"error": "Invalid User ID or Organization"}), 400
+            return jsonify(error_message("Invalid User ID or Organization")), 400
 
         id_password_list = get_id_and_passwords(number_of_accounts)
 
@@ -151,7 +127,7 @@ def get_n_accounts():
                 item, account_type, organization)
             if current_request.status_code != 200:
                 app.logger.error(f"Failed to create account for {item}")
-                return jsonify({"error": "Failed to create all accounts"}), 400
+                return jsonify(error_message("Failed to create all accounts")), 400
             else:
                 accounts_created.append(item)
 

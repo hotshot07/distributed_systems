@@ -33,8 +33,6 @@ CountryAdo = resource.Table(COUNTRY_ADO)
 def update_user_if_exists(**kwargs):
     try:
 
-        pprint(kwargs)
-
         response = UserProfile.update_item(
             Key={
                 'Organization': kwargs['Organization'],
@@ -62,8 +60,8 @@ def update_user_if_exists(**kwargs):
             return Response("Invalid parameters", 400)
         raise e
 
-    logging.info(f"Created user {kwargs['Id']}")
-    return Response("Account created", 200)
+    logging.info(f"Updated profile of  user:{kwargs['Id']}")
+    return Response("Profile updated", 200)
 
 
 # check if id exists in database and its an orchestrator

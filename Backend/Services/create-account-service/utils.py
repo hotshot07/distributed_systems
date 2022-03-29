@@ -19,3 +19,7 @@ def get_id_and_passwords(n):
             'Password': generate_password()
         })
     return id_and_passwords
+
+
+def error_message(message):
+    return dict(error=message)
