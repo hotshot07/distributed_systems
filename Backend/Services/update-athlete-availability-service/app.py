@@ -7,7 +7,6 @@ import forms
 from settings import *
 import logging
 
-
 app = Flask(__name__)
 
 #for request format see readme
