@@ -2,7 +2,7 @@ name: Build Docker Images CI
 
 on:
   push:
-    branches: [ main,athlete-test-service-k8-setup ]
+    branches: [ main ]
   
 jobs:
   docker:
