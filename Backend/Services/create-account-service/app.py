@@ -8,7 +8,10 @@ app = Flask(__name__)
 
 ADMIN_ALLOWED_ACCOUNTS = set(['Orchestrator', 'WADA'])
 
-# for external + internal requests
+###
+# update routes UPDATE an existing inactive account in user_profile
+# create routes CREATE a new inactive account in auth + user_profile
+###
 
 
 @app.route("/update-athlete-account", methods=['GET', 'POST'])
@@ -28,7 +31,6 @@ def create_athlete_account():
         return update_user_if_exists(**athlete_model.account_dict())
 
 
-# this account type is for internal requests only (IT admin)
 @app.route("/update-orch-account", methods=['GET', 'POST'])
 def create_orchestrator_account():
     if request.method == 'POST':
@@ -45,8 +47,6 @@ def create_orchestrator_account():
             return jsonify({"error": "Missing or invalid data parameters"}), 400
 
         return update_user_if_exists(**orchestrator_model.account_dict())
-
-# this account type is for internal requests only (it admin == us)
 
 
 @app.route("/update-tester-account", methods=['GET', 'POST'])
