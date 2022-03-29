@@ -101,7 +101,7 @@ class AthleteTest:
             'start_date': {'S': self.start_date},
             'start_time': {'S': self.start_time},
             'location': {'S': self.location},
-            'country': {'S': self.country},
+            'country': {'S': str(self.country)},
             'tester': {'M': {
                 'user_id': {
                     'S': self.tester.user_id
