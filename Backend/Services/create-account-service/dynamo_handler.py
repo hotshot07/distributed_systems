@@ -1,24 +1,25 @@
-import boto3, botocore
+import boto3
+import botocore
 from settings import *
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from flask import Response
 import logging
-from pprint import pprint 
+from pprint import pprint
 from werkzeug.security import generate_password_hash, check_password_hash
 
 resource = boto3.resource(
     'dynamodb',
-    aws_access_key_id     = AWS_ACCESS_KEY_ID,
-    aws_secret_access_key = AWS_SECRET_ACCESS_KEY,
-    region_name           = REGION_NAME,
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    region_name=REGION_NAME,
 )
 
 client = boto3.client(
     'dynamodb',
-    aws_access_key_id     = AWS_ACCESS_KEY_ID,
-    aws_secret_access_key = AWS_SECRET_ACCESS_KEY,
-    region_name           = REGION_NAME,
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    region_name=REGION_NAME,
 )
 
 
@@ -26,18 +27,20 @@ UserProfile = resource.Table(USER_PROFILE)
 AuthTable = resource.Table(AUTH_TABLE)
 CountryAdo = resource.Table(COUNTRY_ADO)
 
-#this function UPDATES an already existing account with the new information
+# this function UPDATES an already existing account with the new information
+
+
 def update_user_if_exists(**kwargs):
     try:
-        
+
         pprint(kwargs)
-        
+
         response = UserProfile.update_item(
             Key={
                 'Organization': kwargs['Organization'],
                 'Id': kwargs['Id']
             },
-            ConditionExpression = "Organization = :o and Id = :i and AccountType = :t and AccountStatus = :ias",
+            ConditionExpression="Organization = :o and Id = :i and AccountType = :t and AccountStatus = :ias",
             UpdateExpression="set FirstName = :fn, LastName = :ln, Email = :e, PhoneNumber = :pn, Country = :c, AccountStatus = :s",
             ExpressionAttributeValues={
                 ':o': kwargs['Organization'],
@@ -58,7 +61,7 @@ def update_user_if_exists(**kwargs):
             logging.error((f"Invalid request for {kwargs}: {e}"))
             return Response("Invalid parameters", 400)
         raise e
-    
+
     logging.info(f"Created user {kwargs['Id']}")
     return Response("Account created", 200)
 
@@ -67,15 +70,17 @@ def update_user_if_exists(**kwargs):
 def check_id(user_id, organization):
     try:
         response = UserProfile.query(
-            KeyConditionExpression=Key('Id').eq(user_id) & Key('Organization').eq(organization)
+            KeyConditionExpression=Key('Id').eq(
+                user_id) & Key('Organization').eq(organization)
         )
-        
+
     except ClientError as e:
         logging.error(e.response['Error']['Message'])
         return False
     else:
         if response['Count'] == 0:
-            logging.error(f"User {user_id} does not exist or doesnt match organization {organization}")
+            logging.error(
+                f"User {user_id} does not exist or doesnt match organization {organization}")
             return False
         else:
             profile = response['Items'][0]
@@ -83,13 +88,14 @@ def check_id(user_id, organization):
                 return True
             logging.error(f"User {user_id} is not an active orchestrator")
             return False
-        
+
+
 def check_country(country):
     try:
         response = CountryAdo.query(
             KeyConditionExpression=Key('Country').eq(country)
         )
-        
+
     except ClientError as e:
         logging.error(e.response['Error']['Message'])
         logging.info(f"Country {country} does not exist")
@@ -99,13 +105,15 @@ def check_country(country):
             return False
         return True
 
+
 def create_inactive_account(item, account_type, organization):
-    
+
     user_id = item['Id']
-    
+
     password = item['Password']
-    hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
-    
+    hashed_password = generate_password_hash(
+        password, method='pbkdf2:sha256', salt_length=16)
+
     try:
         response = client.transact_write_items(
             TransactItems=[
@@ -118,7 +126,7 @@ def create_inactive_account(item, account_type, organization):
                             },
                             'hashed_password': {
                                 'S': str(hashed_password)
-                            } 
+                            }
                         }
                     }
                 },
@@ -135,10 +143,10 @@ def create_inactive_account(item, account_type, organization):
                             'AccountType': {
                                 'S': str(account_type),
                             },
-                            'AccountStatus':{
+                            'AccountStatus': {
                                 'S': 'Inactive'
                             },
-                        } ,
+                        },
                         'ConditionExpression': 'attribute_not_exists(Id)'
                     }
                 }
@@ -148,11 +156,4 @@ def create_inactive_account(item, account_type, organization):
         logging.error(e.response['Error']['Message'])
         return Response("Error creating account", 400)
     else:
-        return Response("Account created", 200) 
-    
-
-
-    
-    
-    
-    
+        return Response("Account created", 200)
