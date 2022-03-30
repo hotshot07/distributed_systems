@@ -15,8 +15,8 @@ def view_results(country: str):
     :return: json data
     """
 
-    if country.capitalize() in country_list:
-        return get_test_results(country=country.capitalize())
+    if country in country_list:
+        return get_test_results(country=country)
     else:
         return f"Invalid country name {country}"
 
