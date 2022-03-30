@@ -1,6 +1,6 @@
 from boto3.dynamodb.conditions import Key
 import boto3
-from .settings import ATHLETE_TEST_TABLE, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME
+from settings import ATHLETE_TEST_TABLE, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME
 
 def connect():
     """
