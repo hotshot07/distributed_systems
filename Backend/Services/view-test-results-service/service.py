@@ -1,11 +1,6 @@
-import boto3
 from boto3.dynamodb.conditions import Key
-from decouple import config
-
-AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
-REGION_NAME = config("REGION_NAME")
-
+import boto3
+from .settings import ATHLETE_TEST_TABLE, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME
 
 def connect():
     """
@@ -13,12 +8,12 @@ def connect():
     :return: table of interest
     """
     dynamo_resource = boto3.resource(
-        "dynamodb",
+        'dynamodb',
         aws_access_key_id=AWS_ACCESS_KEY_ID,
         aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        region_name=REGION_NAME,
+        region_name=REGION_NAME
     )
-    table = dynamo_resource.Table("AthleteTest")
+    table = dynamo_resource.Table(ATHLETE_TEST_TABLE)
     return table
 
 
