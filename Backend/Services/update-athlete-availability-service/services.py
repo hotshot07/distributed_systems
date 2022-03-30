@@ -1,5 +1,6 @@
 import boto3
 from botocore.exceptions import ClientError
+from boto3.dynamodb.conditions import Key
 
 from settings import *
 from models import AthleteAvailability
@@ -33,4 +34,25 @@ def put_item(availability: AthleteAvailability, dynamo):
 def create_availability(availability):
     dynamo = connect()
     resp = put_item(availability, dynamo=dynamo)
+    return resp
+
+
+def get_items(athlete_id: str, dynamo):
+    table = dynamo.Table(ATHLETE_AVAILABILITY_TABLE)
+    try:
+        response = table.query(
+            KeyConditionExpression=Key('athlete_id').eq(athlete_id)
+        )
+        if response['Items']:
+            return response['Items']
+        else:
+            return []
+
+    except ClientError as e:
+        raise e
+
+
+def get_availability(availability: int):
+    dynamo = connect()
+    resp = get_items(availability, dynamo=dynamo)
     return resp
