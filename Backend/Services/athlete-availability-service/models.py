@@ -36,7 +36,6 @@ class AthleteAvailability:
 
 
     def __verify_country(self, country):
-        country = country.lower().capitalize()
         if country in country_dict.keys():
             self.location_country = country_dict[country]
         else:

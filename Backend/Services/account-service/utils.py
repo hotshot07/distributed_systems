@@ -23,3 +23,15 @@ def get_id_and_passwords(n):
 
 def error_message(message):
     return dict(error=message)
+
+def validate_country(country):
+    l_country = country.split()
+    if len(l_country) > 0:
+        for idx, word in enumerate(l_country):
+            if word.lower() in ['of', 'the', 'former', 'part']:
+                l_country[idx] = word.lower()
+            else:
+                l_country[idx] = word.capitalize()
+            f_county = ' '.join(l_country)
+        country = f_county
+    return country

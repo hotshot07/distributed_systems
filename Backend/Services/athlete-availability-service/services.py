@@ -11,9 +11,9 @@ from models import AthleteAvailability
 def connect():
     dynamo_resource = boto3.resource(
         'dynamodb',
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        region_name=REGION_NAME
+        aws_access_key_id='AKIAZN3M6N6WYMZ2TGMF',
+        aws_secret_access_key='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',
+        region_name='eu-west-1'
         )
     return dynamo_resource
 
