@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: schedule-athlete-test-service-deployment
+  name: account-service-deployment
   labels:
-    app: sats
+    app: as
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sats
+      app: as
   template:
     metadata:
       labels:
-        app: sats
+        app: as
     spec:
       containers:
-        - name: sats
-          image: distributed07/schedule-athlete-test-service:latest
+        - name: as
+          image: distributed07/account-service:latest
           imagePullPolicy: Always
           workingDir: /app
           command: ["/bin/sh", "-c"]
@@ -43,13 +43,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: schedule-athlete-test-service
+  name: account-service
 spec:
   type: ClusterIP
   selector:
-    app: sats
+    app: as
   ports:
     - port: 5000
       targetPort: 5000
-      protocol: TCP
-      name: schedule-athlete-test-service
+      name: account-service

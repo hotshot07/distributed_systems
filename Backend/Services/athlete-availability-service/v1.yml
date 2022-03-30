@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: schedule-athlete-test-service-deployment
+  name: athlete-availability-service-deployment
   labels:
-    app: sats
+    app: aas
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sats
+      app: aas
   template:
     metadata:
       labels:
-        app: sats
+        app: aas
     spec:
       containers:
-        - name: sats
-          image: distributed07/schedule-athlete-test-service:latest
+        - name: aas
+          image: distributed07/athlete-availability-service:latest
           imagePullPolicy: Always
           workingDir: /app
           command: ["/bin/sh", "-c"]
@@ -43,13 +43,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: schedule-athlete-test-service
+  name: athlete-availability-service
 spec:
   type: ClusterIP
   selector:
-    app: sats
+    app: aas
   ports:
     - port: 5000
       targetPort: 5000
       protocol: TCP
-      name: schedule-athlete-test-service
+      name: athlete-availability-service

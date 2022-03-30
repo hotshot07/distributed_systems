@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: create-account-service-deployment
+  name: auth-service-deployment
   labels:
-    app: cas
+    app: uas
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cas
+      app: uas
   template:
     metadata:
       labels:
-        app: cas
+        app: uas
     spec:
       containers:
-        - name: cas
-          image: distributed07/create-account-service:latest
+        - name: uas
+          image: distributed07/authentication-service:latest
           imagePullPolicy: Always
           workingDir: /app
           command: ["/bin/sh", "-c"]
-          args: ["gunicorn app:app --bind 127.0.0.1:5000 --log-level=debug"]
+          args: ["gunicorn app:app --bind 0.0.0.0:5000 --log-level=debug"]
           ports:
             - containerPort: 5000
           env:
@@ -43,13 +43,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: create-account-service
+  name: auth-service
 spec:
   type: ClusterIP
   selector:
-    app: cas
+    app: uas
   ports:
     - port: 5000
       targetPort: 5000
       protocol: TCP
-      name: create-account-service
+      name: auth-service
