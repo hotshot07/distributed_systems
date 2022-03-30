@@ -3,7 +3,7 @@ name: Build Docker Images CI
 on:
   push:
     branches: [main]
-    paths: Backend/Services/Authentication/**
+    paths: [Backend/Services/auth-service/**]
 
 jobs:
   docker:

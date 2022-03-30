@@ -47,7 +47,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: cas
+    app: as
   ports:
     - port: 5000
       targetPort: 5000
