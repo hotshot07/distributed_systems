@@ -12,9 +12,14 @@ app = Flask(__name__)
 ###
 
 
-@app.route("/update-athlete-account", methods=['GET', 'POST'])
+@app.route("/", methods=["GET"])
+def index():
+    return "account-service works"
+
+
+@app.route("/update-athlete-account", methods=["GET", "POST"])
 def create_athlete_account():
-    if request.method == 'POST':
+    if request.method == "POST":
 
         data = request.get_json()
         athlete_model = Athlete(**data)
@@ -29,9 +34,9 @@ def create_athlete_account():
         return update_user_if_exists(**athlete_model.account_dict())
 
 
-@app.route("/update-orch-account", methods=['GET', 'POST'])
+@app.route("/update-orch-account", methods=["GET", "POST"])
 def create_orchestrator_account():
-    if request.method == 'POST':
+    if request.method == "POST":
 
         data = request.get_json()
         orchestrator_model = Orchestrator(**data)
@@ -47,9 +52,9 @@ def create_orchestrator_account():
         return update_user_if_exists(**orchestrator_model.account_dict())
 
 
-@app.route("/update-tester-account", methods=['GET', 'POST'])
+@app.route("/update-tester-account", methods=["GET", "POST"])
 def create_tester_account():
-    if request.method == 'POST':
+    if request.method == "POST":
 
         data = request.get_json()
         tester_model = Tester(**data)
@@ -64,13 +69,13 @@ def create_tester_account():
         return update_user_if_exists(**tester_model.account_dict())
 
 
-@app.route("/admin-inactive-accounts", methods=['POST'])
+@app.route("/admin-inactive-accounts", methods=["GET", "POST"])
 def admin_inactive_accounts():
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.get_json()
 
-        country = data.get('Country')
-        account_type = data.get('AccountType')
+        country = data.get("Country")
+        account_type = data.get("AccountType")
 
         app.logger.info(f"Recieved request to create account {data}")
 
@@ -88,7 +93,7 @@ def admin_inactive_accounts():
 
         account = id_password_list[0]
 
-        organization = country + ' ' + 'ADO'
+        organization = country + " " + "ADO"
 
         current_request = create_inactive_account(
             account, account_type, organization)
@@ -100,18 +105,19 @@ def admin_inactive_accounts():
         return jsonify(id_password_list), 200
 
 
-@app.route("/create-n-accounts", methods=['POST'])
+@app.route("/create-n-accounts", methods=["GET", "POST"])
 def get_n_accounts():
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.get_json()
 
-        user_id = data.get('Id')
-        organization = data.get('Organization')
-        number_of_accounts = data.get('NumberOfAccounts')
-        account_type = data.get('AccountType')
+        user_id = data.get("Id")
+        organization = data.get("Organization")
+        number_of_accounts = data.get("NumberOfAccounts")
+        account_type = data.get("AccountType")
 
         app.logger.info(
-            f"Recieved request to create {number_of_accounts} accounts by ID {user_id}")
+            f"Recieved request to create {number_of_accounts} accounts by ID {user_id}"
+        )
 
         if not check_id(user_id, organization):
             return jsonify(error_message("Invalid User ID or Organization")), 400
@@ -134,13 +140,13 @@ def get_n_accounts():
         return jsonify(accounts_created), 200
 
 
-if __name__ != '__main__':
+if __name__ != "__main__":
     # if we are not running directly, we set the loggers
-    gunicorn_logger = logging.getLogger('gunicorn.error')
+    gunicorn_logger = logging.getLogger("gunicorn.error")
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
     app.logger.info("Create account service is now running!")
 
 if __name__ == "__main__":
     app.logger.setLevel(logging.DEBUG)
-    app.run(port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

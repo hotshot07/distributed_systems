@@ -8,6 +8,8 @@ import logging
 from pprint import pprint
 from werkzeug.security import generate_password_hash, check_password_hash
 
+logger = logging.getLogger(__name__)
+
 resource = boto3.resource(
     'dynamodb',
     aws_access_key_id=AWS_ACCESS_KEY_ID,
@@ -56,11 +58,11 @@ def update_user_if_exists(**kwargs):
         )
     except ClientError as e:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            logging.error((f"Invalid request for {kwargs}: {e}"))
+            logger.error((f"Invalid request for {kwargs}: {e}"))
             return Response("Invalid parameters", 400)
         raise e
 
-    logging.info(f"Updated profile of  user:{kwargs['Id']}")
+    logger.info(f"Updated profile of  user:{kwargs['Id']}")
     return Response("Profile updated", 200)
 
 
@@ -73,18 +75,18 @@ def check_id(user_id, organization):
         )
 
     except ClientError as e:
-        logging.error(e.response['Error']['Message'])
+        logger.error(e.response['Error']['Message'])
         return False
     else:
         if response['Count'] == 0:
-            logging.error(
+            logger.error(
                 f"User {user_id} does not exist or doesnt match organization {organization}")
             return False
         else:
             profile = response['Items'][0]
             if profile['AccountStatus'] == 'Active' and profile['AccountType'] == 'Orchestrator':
                 return True
-            logging.error(f"User {user_id} is not an active orchestrator")
+            logger.error(f"User {user_id} is not an active orchestrator")
             return False
 
 
@@ -95,8 +97,8 @@ def check_country(country):
         )
 
     except ClientError as e:
-        logging.error(e.response['Error']['Message'])
-        logging.info(f"Country {country} does not exist")
+        logger.error(e.response['Error']['Message'])
+        logger.info(f"Country {country} does not exist")
         return False
     else:
         if response['Count'] == 0:
@@ -151,7 +153,7 @@ def create_inactive_account(item, account_type, organization):
             ]
         )
     except ClientError as e:
-        logging.error(e.response['Error']['Message'])
+        logger.error(e.response['Error']['Message'])
         return Response("Error creating account", 400)
     else:
         return Response("Account created", 200)
