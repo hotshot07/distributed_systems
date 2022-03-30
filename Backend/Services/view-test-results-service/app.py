@@ -1,10 +1,7 @@
 from flask import Flask
 from service import get_test_results
 import logging
-app = Flask(__name__)
 
-
-@app.route("/view-test-results/<string:country>", methods=['GET'])
 from utils import country_list
 
 app = Flask(__name__)
@@ -17,7 +14,6 @@ def view_results(country: str):
     :param country: Country whose test results are asked
     :return: json data
     """
-
 
     if country.capitalize() in country_list:
         return get_test_results(country=country.capitalize())
@@ -34,6 +30,3 @@ if __name__ != "__main__":
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
     app.logger.info("View test results service is now running!")
-
-
-
