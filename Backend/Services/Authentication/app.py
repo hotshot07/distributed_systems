@@ -8,11 +8,18 @@ from flask import Flask, jsonify, make_response, request
 from werkzeug.security import check_password_hash
 
 from service import query_auth_table, query_user_profile_table
+from settings import (
+    COULD_NOT_VERIFY,
+    INVALID_TOKEN,
+    MISSING_TOKEN,
+    TOKEN_EXPIRY_MINUTES,
+    USER_AUTHENTICATED,
+    USER_DOES_NOT_EXIST,
+)
 
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "thisisthesecretkey"
-TOKEN_EXPIRY_MINUTES = 30
 
 
 def token_required(f):
@@ -23,13 +30,12 @@ def token_required(f):
             token = request.headers["X-Access-Token"]
 
         if not token:
-            return jsonify({"message": "Token is missing!"}), 401
-
+            return make_response(MISSING_TOKEN, 401)
         try:
             data = jwt.decode(
                 token, app.config["SECRET_KEY"], algorithms=["HS256"])
         except:
-            return jsonify({"message": "Token is invalid"}), 401
+            return make_response(INVALID_TOKEN, 401)
 
         return f(*args, **kwargs)
 
@@ -55,7 +61,7 @@ def login():
         or not request.authorization.password
     ):
         return make_response(
-            "could not verify", 401, {"Authentication": 'login required"'}
+            COULD_NOT_VERIFY, 401, {"Authentication": 'login required"'}
         )
 
     # Aquire username and password from auth headers
@@ -68,7 +74,7 @@ def login():
         response = query_user_profile_table(username)
 
         if response["Count"] == 0:
-            return jsonify({"message": "User does not exist!"}), 404
+            return make_response(USER_DOES_NOT_EXIST, 404)
 
         user_id = response["Items"][0]["Id"]
     else:
@@ -79,7 +85,7 @@ def login():
 
     # If no entries in Auth table found, return error.
     if response["Count"] == 0:
-        return jsonify({"message": "User does not exist"}), 404
+        return make_response(USER_DOES_NOT_EXIST, 404)
 
     hashed_password = response["Items"][0]["hashed_password"]
 
@@ -94,13 +100,13 @@ def login():
             app.config["SECRET_KEY"],
         )
         # Create the response with the JWT in both cookies and X-Access-Token header.
-        response = make_response("Token returned. User Authenticated.")
+        response = make_response(USER_AUTHENTICATED)
         response.headers["X-Access-Token"] = token
         response.set_cookie("Access Token", token)
 
         return response
     return make_response(
-        "Could not verify", 401, {
+        COULD_NOT_VERIFY, 401, {
             "WWW-Authenticate": 'Basic realm="Login Required"'}
     )
 
