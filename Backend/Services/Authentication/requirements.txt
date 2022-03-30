@@ -3,4 +3,3 @@ boto3==1.21.19
 python-decouple==3.6
 pyjwt==2.3.0
 gunicorn
-fcntl
