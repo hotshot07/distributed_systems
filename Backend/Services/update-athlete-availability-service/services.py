@@ -1,8 +1,9 @@
-import datetime
 import boto3
 from botocore.exceptions import ClientError
+from boto3.dynamodb.conditions import Key
 
 from settings import *
+from models import AthleteAvailability
 
 #TODO: More error handling
 
@@ -17,38 +18,41 @@ def connect():
     return dynamo_resource
 
 
-#UPDATE
-def update_item(availability, dynamo):
+def put_item(availability: AthleteAvailability, dynamo):
     table = dynamo.Table(ATHLETE_AVAILABILITY_TABLE)
-    #date_time already in datetime object from util.py
-    date_attribute = availability['date_time_utc'].date().isoformat()
-    time_attribute = availability['date_time_utc'].time().isoformat()
-
+    availability_item = availability.__dict__
     try:
-        response = table.update_item(
-            Key={
-                'athlete_id': availability['athlete_id'],
-                'date': date_attribute,
-            },
-            UpdateExpression='set available_time = :t, location_address = :loc, location_country = :c',
-            ExpressionAttributeValues={
-                    ':t' : time_attribute,
-                    ':loc': availability['location'],
-                    ':c': availability['country']
-            },
-            ReturnValues="ALL_NEW"
+        response = table.put_item(
+            Item=availability_item
         )
-    except ClientError as e:
-        print("ERR:", e.response['Error']['Message'])
-    else:
         return response
 
+    except ClientError as e:
+        raise e
 
-#update availability
-def update_availability(availability):
+
+def create_availability(availability):
     dynamo = connect()
-    resp = update_item(availability, dynamo=dynamo)
-    if resp:
-        return UPDATE_SUCCESS
-    else:
-        return None
+    resp = put_item(availability, dynamo=dynamo)
+    return resp
+
+
+def get_items(athlete_id: str, dynamo):
+    table = dynamo.Table(ATHLETE_AVAILABILITY_TABLE)
+    try:
+        response = table.query(
+            KeyConditionExpression=Key('athlete_id').eq(athlete_id)
+        )
+        if response['Items']:
+            return response['Items']
+        else:
+            return []
+
+    except ClientError as e:
+        raise e
+
+
+def get_availability(availability: int):
+    dynamo = connect()
+    resp = get_items(availability, dynamo=dynamo)
+    return resp

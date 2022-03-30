@@ -23,8 +23,12 @@ def get_test_results(country):
     :param country: country whose test results are asked
     :return: json response
     """
+
     response = connect().query(
-        IndexName='country-index',
-        KeyConditionExpression=Key('country').eq(country)
+        IndexName="country-index", KeyConditionExpression=Key("country").eq(country)
     )
-    return response if response['Items'] else f'No test results found for country {country}'
+    return (
+        response
+        if response["Items"]
+        else f"No test results found for country {country}"
+    )

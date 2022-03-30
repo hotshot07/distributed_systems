@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request
-import requests
+
 from forms import CreateTestForm, UpdateTestResultForm
-from dynamodb_handler import create_test, update_test_result
+from dynamodb_handler import update_test_result, create_test_using_transaction
 from settings import *
+import logging
 
 app = Flask(__name__)
 
@@ -15,7 +16,7 @@ def assign_test():
                               tester_id=request.get_json().get('tester_id'),
                               orchestrator_id=request.get_json().get('orchestrator_id'))
         if form.validate():
-            test_item, dynamo_msg = create_test(athlete_id=form.athlete_id,
+            test_item, dynamo_msg = create_test_using_transaction(athlete_id=form.athlete_id,
                                                 orchestrator_id=form.orchestrator_id,
                                                 date=form.date,
                                                 tester_id=form.tester_id)
@@ -47,5 +48,12 @@ def upload_test_result():
                 return jsonify({'message': ITEM_PARAMETERS_INVALID, 'dynamodb_msg': response}), http_code
 
 
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+    app.logger.info("Schedule athlete test service is now running!")
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.logger.setLevel(logging.DEBUG)
+    app.run(port=5000, debug=True)

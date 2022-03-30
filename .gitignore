@@ -5,6 +5,7 @@ __pycache__/
 
 .DS_Store
 
+secrets_yaml.yaml
 # C extensions
 *.so
 

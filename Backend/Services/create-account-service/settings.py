@@ -1,8 +1,12 @@
+import os
 from decouple import config
 
-AWS_ACCESS_KEY_ID     = config("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
-REGION_NAME           = config("REGION_NAME")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+REGION_NAME = os.getenv("REGION_NAME")
 
-COUNTRY_ADO_ID_TABLE = config("COUNTRY_ADO_ID")
-USER_PROFILE = config("USER_PROFILE")
+ADMIN_ALLOWED_ACCOUNTS = set(['Orchestrator', 'WADA'])
+
+USER_PROFILE = "UserProfile"
+AUTH_TABLE = "Auth"
+COUNTRY_ADO = "CountryAdo"
