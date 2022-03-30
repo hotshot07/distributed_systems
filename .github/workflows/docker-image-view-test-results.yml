@@ -3,7 +3,7 @@ name: Build Docker Images CI
 on:
   push:
     branches: [ main, country_bugfix ]
-    paths: [Backend/Services/view-test-results-service/**]
+    paths: Backend/Services/view-test-results-service/**
 
 jobs:
   docker:
