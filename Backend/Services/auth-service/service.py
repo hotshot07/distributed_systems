@@ -21,9 +21,15 @@ AuthTable = resource.Table(AUTH)
 UserProfileTable = resource.Table(USER_PROFILE)
 
 
-def query_user_profile_table(username):
+def query_user_profile_table_email(username):
     return UserProfileTable.query(
         IndexName="Email-index", KeyConditionExpression=Key("Email").eq(username)
+    )
+
+
+def query_user_profile_table_id(user_id):
+    return UserProfileTable.query(
+        IndexName="Id-index", KeyConditionExpression=Key("Id").eq(user_id)
     )
 
 

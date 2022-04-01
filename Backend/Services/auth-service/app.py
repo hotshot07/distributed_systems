@@ -2,44 +2,72 @@ import datetime
 import logging
 import re
 from functools import wraps
+from typing import List
 
 import jwt
 from flask import Flask, jsonify, make_response, request
 from werkzeug.security import check_password_hash
 
-from service import query_auth_table, query_user_profile_table
+from service import (
+    query_auth_table,
+    query_user_profile_table_email,
+    query_user_profile_table_id,
+)
 from settings import (
+    ATHLETE,
     COULD_NOT_VERIFY,
     INVALID_TOKEN,
     MISSING_TOKEN,
+    ORCHESTRATOR,
+    SECRET_KEYS,
+    TESTER,
     TOKEN_EXPIRY_MINUTES,
     USER_AUTHENTICATED,
     USER_DOES_NOT_EXIST,
+    WADA,
 )
 
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = "thisisthesecretkey"
+app.config["SECRET_KEY"] = SECRET_KEYS
 
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        if "X-Access-Token" in request.headers:
-            token = request.headers["X-Access-Token"]
-
-        if not token:
-            return make_response(MISSING_TOKEN, 401)
+def decode_token(Users, token):
+    for user in Users:
         try:
             data = jwt.decode(
-                token, app.config["SECRET_KEY"], algorithms=["HS256"])
+                token, app.config["SECRET_KEY"][user], algorithms=["HS256"]
+            )
+            if data:
+                return user
         except:
-            return make_response(INVALID_TOKEN, 401)
+            continue
 
-        return f(*args, **kwargs)
 
-    return decorated
+def token_required(Users: List):
+    def token(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            token = None
+            if "X-Access-Token" in request.headers:
+                token = request.headers["X-Access-Token"]
+
+            if not token:
+                return make_response(MISSING_TOKEN, 401)
+            user = decode_token(Users, token)
+            try:
+                data = jwt.decode(
+                    token, app.config["SECRET_KEY"][user], algorithms=["HS256"]
+                )
+
+            except:
+                return make_response(INVALID_TOKEN, 401)
+
+            return f(*args, **kwargs)
+
+        return decorated
+
+    return token
 
 
 @app.route("/unprotected")
@@ -48,7 +76,7 @@ def unprotected():
 
 
 @app.route("/protected")
-@token_required
+@token_required([ATHLETE, TESTER])
 def protected():
     return jsonify({"message": "This is only available if you authenticated"})
 
@@ -69,9 +97,9 @@ def login():
     password = request.authorization.password
 
     username = username.strip()
-    # Check if attempted login is with email. Query UserProfiles table for ID if email.
+    # Check if attempted login is with email. Query UserProfiles table for ID if email
     if is_email(username):
-        response = query_user_profile_table(username)
+        response = query_user_profile_table_email(username)
 
         if response["Count"] == 0:
             return make_response(USER_DOES_NOT_EXIST, 404)
@@ -79,6 +107,11 @@ def login():
         user_id = response["Items"][0]["Id"]
     else:
         user_id = username
+        response = query_user_profile_table_id(user_id)
+        if response["Count"] == 0:
+            return make_response(USER_DOES_NOT_EXIST, 404)
+
+    account_type = response["Items"][0]["AccountType"]
 
     # Retrieve hashed password from AuthTable for user-id.
     response = query_auth_table(user_id)
@@ -97,7 +130,7 @@ def login():
                 "exp": datetime.datetime.utcnow()
                 + datetime.timedelta(minutes=TOKEN_EXPIRY_MINUTES),
             },
-            app.config["SECRET_KEY"],
+            app.config["SECRET_KEY"][account_type],
         )
         # Create the response with the JWT in both cookies and X-Access-Token header.
         response = make_response(USER_AUTHENTICATED)
@@ -106,16 +139,14 @@ def login():
 
         return response
     return make_response(
-        COULD_NOT_VERIFY, 401, {
-            "WWW-Authenticate": 'Basic realm="Login Required"'}
+        COULD_NOT_VERIFY, 401, {"WWW-Authenticate": 'Basic realm="Login Required"'}
     )
 
 
 # Check if supplied login credential is an email.
 def is_email(email_or_id):
     return any(
-        re.findall(
-            "([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id)
+        re.findall("([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id)
     )
 
 
