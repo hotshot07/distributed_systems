@@ -1,10 +1,14 @@
 from flask import Flask
+from flask_cors import CORS
 from service import get_test_results
+
 import logging
 
 from utils import country_list
 
+
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route("/view-test-results/<string:country>", methods=["GET"])
