@@ -1,94 +1,96 @@
-import * as React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+// import React, { useMemo, useState, useEffect } from "react";
+import axios from "axios";
+
+// MUI basics
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import Grid from '@mui/material/Grid'
+import Grid from '@mui/material/Grid';
+import Slide from '@mui/material/Slide';
+import Alert from '@mui/material/Alert';
+
 // Search components
 import TextField from '@mui/material/TextField';
-
-// Table Stuff
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import { DataGrid, useGridApiRef} from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import { CssBaseline } from '@mui/material';
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+const columns = [
+  { field: 'athlete_name', headerName: 'Name'},
+  { field: 'athlete_id', headerName: 'ID'},
+  { field: 'assigned_on', headerName: 'Assigned' },
+  { field: 'location', headerName: 'Location'},
+  { field: 'result', headerName: 'Result'},
+  { field: 'ochestrator_id', headerName: 'Orchestrator'},
+  { field: 'test_datetime', headerName: 'Test Date'},
+  { field: 'tester_name', headerName: 'Tester'}
+]
 
-const rows = [
-  createData('Frozen yoghurt', 123, "Yokes", "false", "Canada"),
-  createData('Ice cream sandwich', 420, "Loads", "false", "United Kingdom"),
-  createData('Eclair', 262, "None", "true", "China"),
-  createData('Cupcake', 305, "Guinness", "true", "Ireland"),
-  createData('Gingerbread', 356, "None", "true", "Spain"),
-];
+const Tests = () => {
+  const [tableData, setTableData] = useState([]);
+  const [tableError, setTableError] = useState(false);
 
+  const countryTextFieldValueRef = useRef('')
+  const tableInitialMount = useRef(true);
+  let idCounter = 0;
 
-class Tests extends React.Component{
-  constructor(props) {
-    super(props);
-  
-    // Initializing the state 
-    this.state = { color: 'lightgreen' };
+  async function getData() {
+    console.log(countryTextFieldValueRef.current.value)
+    if (countryTextFieldValueRef) {
+      await axios.get('http://127.0.0.1:3000/view-test-results/'.concat(countryTextFieldValueRef.current.value), { crossDomain: true })
+      .then((response) => {
+        response.data.Items.forEach((x, i) => {
+          x['_id']            = idCounter++;
+          x['ochestrator_id'] = x['orchestrator']['user_id'];
+          x['athlete_name']   = x['athlete']['first_name'] + " " + x['athlete']['second_name'];
+          x['athlete_id']     = x['athlete']['user_id']
+          x['tester_name']    = x['tester']['first_name'] + " " + x['tester']['second_name']
+        });
+        
+        setTableData(response.data.Items);
+        });
+    }
+    else{
+      console.log(countryTextFieldValueRef)
+      console.log("Something went wrong")
+    }
   }
-
-  render() {
-      return (
-        <Grid
-        container
-        spacing={0}
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
-        style={{ minHeight: '100vh' }}
-      >
-        <CssBaseline/>
-        <Grid item xs={3}>
-            <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
-                <TextField id="outlined-basic" label="Athlete ID" variant="outlined" sx={{ m: 2 }} />
-                <Button variant="outlined" sx={{ m: 2 }}>Get Results</Button>
-            </Stack>
-            <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                <TableRow>
-                    <TableCell>Athlete Name</TableCell>
-                    <TableCell align="right">ID</TableCell>
-                    <TableCell align="right">Drugs</TableCell>
-                    <TableCell align="right">Passed</TableCell>
-                    <TableCell align="right">ADO</TableCell>
-                </TableRow>
-                </TableHead>
-                <TableBody>
-                {rows.map((row) => (
-                    <TableRow
-                    key={row.name}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                    <TableCell component="th" scope="row">
-                        {row.name}
-                    </TableCell>
-                    <TableCell align="right">{row.calories}</TableCell>
-                    <TableCell align="right">{row.fat}</TableCell>
-                    <TableCell align="right">{row.carbs}</TableCell>
-                    <TableCell align="right">{row.protein}</TableCell>
-                    </TableRow>
-                ))}
-                </TableBody>
-            </Table>
-            </TableContainer>
-        </Grid>   
-      </Grid> 
-        );  
-      }
-
-  componentDidMount(){
-    console.log("Component did mount.")
   
-  }
+  useEffect(() => {
+    if (tableInitialMount.current){
+      tableInitialMount.current = false;
+    }
+    else{
+      console.log("Table data changed")
+    }
+  }, [tableData])
+
+  return (
+  <Grid
+      container
+      spacing={0}
+      direction="column"
+      alignItems="center"
+      justifyContent="center"
+      style={{ minHeight: '100vh' }}
+    >
+      <CssBaseline/>
+
+        <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+            <TextField id="outlined-basic" label="Country" variant="outlined" sx={{ m: 2 }} inputRef={countryTextFieldValueRef}/>
+            <Button variant="outlined" sx={{ m: 2 }} onClick={getData}>Get Results</Button>
+        </Stack>
+        <Slide direction="up" in={tableError} mountOnEnter unmountOnExit>
+          <Alert severity="error">Results for {countryTextFieldValueRef} could not be loaded.</Alert>
+        </Slide>
+        <div style={{ height: 400, width: "50%" }}>
+          <DataGrid
+          getRowId={(row) => row._id} 
+          columns={columns} 
+          rows={tableData} 
+          pageSize={15} />
+        </div>
+    </Grid> 
+    );  
 };
 export default Tests;
