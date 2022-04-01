@@ -1,6 +1,8 @@
 from boto3.dynamodb.conditions import Key
 import boto3
 from settings import ATHLETE_TEST_TABLE, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION_NAME
+from app import cache
+
 
 def connect():
     """
@@ -17,6 +19,7 @@ def connect():
     return table
 
 
+@cache.cached(timeout=50)
 def get_test_results(country):
     """
     Query table to fetch data
