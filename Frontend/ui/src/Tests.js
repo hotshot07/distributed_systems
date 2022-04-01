@@ -48,9 +48,9 @@ class Tests extends React.Component{
       >
         <CssBaseline/>
         <Grid item xs={3}>
-            <Stack direction="row" spacing={2}>
-                <Button variant="contained">Get Results</Button>
-                <TextField id="outlined-basic" label="Athlete ID" variant="outlined"/>
+            <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                <TextField id="outlined-basic" label="Athlete ID" variant="outlined" sx={{ m: 2 }} />
+                <Button variant="outlined" sx={{ m: 2 }}>Get Results</Button>
             </Stack>
             <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
