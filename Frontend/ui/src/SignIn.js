@@ -43,7 +43,7 @@ export default function SignIn() {
 
     const authorization = `Basic ${basicAuthAsToken}`
 
-    axios.post("http://localhost:5000/login", {}, { headers: { "Authorization": authorization, crossDomain: true } })
+    axios.post("http://127.0.0.1:5000/login", {crossDomain: true }, { headers: { "Authorization": authorization, crossDomain: true } })
       .then((response) => {
         if (response.status === 200) {
           console.log(response.data)

@@ -45,7 +45,7 @@ kind: Service
 metadata:
   name: auth-service
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: uas
   ports:
