@@ -1,11 +1,14 @@
 import datetime
+from distutils.command.build import build
 import logging
 import re
 from functools import wraps
 
 import jwt
 from flask import Flask, jsonify, make_response, request
+from flask_cors import CORS, cross_origin
 from werkzeug.security import check_password_hash
+
 
 from service import query_auth_table, query_user_profile_table
 from settings import (
@@ -18,7 +21,16 @@ from settings import (
 )
 
 app = Flask(__name__)
-
+# CORS_ALLOW_ORIGIN = "*,*"
+# CORS_EXPOSE_HEADERS = "*,*"
+# CORS_ALLOW_HEADERS = "content-type,*"
+# cors = CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
+#             allow_headers=CORS_ALLOW_HEADERS.split(","), 
+#             expose_headers=CORS_EXPOSE_HEADERS.split(","),   
+#             supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "*",
+                            "allow_headers": "*",
+                            "expose_headers": "*"}})
 app.config["SECRET_KEY"] = "thisisthesecretkey"
 
 
@@ -55,60 +67,63 @@ def protected():
 
 @app.route("/login", methods=["POST"])
 def login():
-    if (
-        not request.authorization
-        or not request.authorization.username
-        or not request.authorization.password
-    ):
-        return make_response(
-            COULD_NOT_VERIFY, 401, {"Authentication": 'login required"'}
-        )
+    if (request.method == "OPTIONS"):
+        return build_preflight_response(), 200
 
-    # Aquire username and password from auth headers
-    username = request.authorization.username
-    password = request.authorization.password
+    elif (request.method == "POST"):
+        if (
+            not request.authorization
+            or not request.authorization.username
+            or not request.authorization.password
+        ):
+            print(request.__dict__)
+            return make_response(
+                COULD_NOT_VERIFY, 401, {"Authentication": 'login required"'}
+            )
+        # Aquire username and password from auth headers
+        username = request.authorization.username
+        password = request.authorization.password
+        print(request.__dict__)
+        username = username.strip()
+        # Check if attempted login is with email. Query UserProfiles table for ID if email.
+        if is_email(username):
+            response = query_user_profile_table(username)
 
-    username = username.strip()
-    # Check if attempted login is with email. Query UserProfiles table for ID if email.
-    if is_email(username):
-        response = query_user_profile_table(username)
+            if response["Count"] == 0:
+                return make_response(USER_DOES_NOT_EXIST, 404)
 
+            user_id = response["Items"][0]["Id"]
+        else:
+            user_id = username
+
+        # Retrieve hashed password from AuthTable for user-id.
+        response = query_auth_table(user_id)
+
+        # If no entries in Auth table found, return error.
         if response["Count"] == 0:
             return make_response(USER_DOES_NOT_EXIST, 404)
 
-        user_id = response["Items"][0]["Id"]
-    else:
-        user_id = username
+        hashed_password = response["Items"][0]["hashed_password"]
 
-    # Retrieve hashed password from AuthTable for user-id.
-    response = query_auth_table(user_id)
+        # Check the password hash vs the password from the auth headers.
+        if check_password_hash(hashed_password, password):
+            token = jwt.encode(
+                {
+                    "user": username,
+                    "exp": datetime.datetime.utcnow()
+                    + datetime.timedelta(minutes=TOKEN_EXPIRY_MINUTES),
+                },
+                app.config["SECRET_KEY"],
+            )
+            # Create the response with the JWT in both cookies and X-Access-Token header.
+            response = make_response(token)
+            response.headers.add("Access-Control-Allow-Origin", "*")
 
-    # If no entries in Auth table found, return error.
-    if response["Count"] == 0:
-        return make_response(USER_DOES_NOT_EXIST, 404)
-
-    hashed_password = response["Items"][0]["hashed_password"]
-
-    # Check the password hash vs the password from the auth headers.
-    if check_password_hash(hashed_password, password):
-        token = jwt.encode(
-            {
-                "user": username,
-                "exp": datetime.datetime.utcnow()
-                + datetime.timedelta(minutes=TOKEN_EXPIRY_MINUTES),
-            },
-            app.config["SECRET_KEY"],
+            return response, 200
+        return make_response(
+            COULD_NOT_VERIFY, 401, {
+                "WWW-Authenticate": 'Basic realm="Login Required"'}
         )
-        # Create the response with the JWT in both cookies and X-Access-Token header.
-        response = make_response(USER_AUTHENTICATED)
-        response.headers["X-Access-Token"] = token
-        response.set_cookie("Access Token", token)
-
-        return response
-    return make_response(
-        COULD_NOT_VERIFY, 401, {
-            "WWW-Authenticate": 'Basic realm="Login Required"'}
-    )
 
 
 # Check if supplied login credential is an email.
@@ -117,6 +132,14 @@ def is_email(email_or_id):
         re.findall(
             "([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id)
     )
+
+
+def build_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
 
 
 if __name__ == "__main__":

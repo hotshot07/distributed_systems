@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, make_response, jsonify
 from flask_cors import CORS
 from service import get_test_results
 
@@ -22,7 +22,15 @@ def view_results(country: str):
     if country in country_list:
         return get_test_results(country=country)
     else:
-        return f"Invalid country name {country}"
+        response = make_response(
+                jsonify(
+                    {"message": "Invalid country name {country}"}
+                ),
+                400,
+            )
+        response.headers["Content-Type"] = "application/json"
+        return response
+
 
 
 if __name__ == '__main__':

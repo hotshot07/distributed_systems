@@ -1,4 +1,7 @@
-import * as React from 'react';
+import React, { useRef, useState } from 'react';
+import { Buffer } from 'buffer';
+
+// MUI imports
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -6,7 +9,12 @@ import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Slide from '@mui/material/Slide';
+import Alert from '@mui/material/Alert';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+// Networking
+import axios from "axios";
 
 function Copyright(props) {
   return (
@@ -24,15 +32,31 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
+  const userRef = useRef('')
+  const passRef = useRef('')
+  const [loginError, setLoginError] = useState(false)
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log(`Should send auth request to [*] with ${data.email} ${data.password}`)
-  };
 
-  function sayHello() {
-    console.log("Placeholder for login action.")
-  }
+    const basicAuthAsToken = Buffer.from(`${userRef.current.value}:${passRef.current.value}`).toString('base64');
+
+    const authorization = `Basic ${basicAuthAsToken}`
+
+    axios.post("http://localhost:5000/login", {}, { headers: { "Authorization": authorization, crossDomain: true } })
+      .then((response) => {
+        if (response.status === 200) {
+          console.log(response.data)
+          setLoginError(false);
+        }
+        else {
+          setLoginError(true);
+        }
+      })
+      .catch((err) => {
+        console.log("Err")
+      })
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -49,7 +73,10 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Slide direction="up" in={loginError} mountOnEnter unmountOnExit>
+            <Alert severity="error">Username or password not recognised.</Alert>
+          </Slide>
+          <Box noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -58,6 +85,7 @@ export default function SignIn() {
               label="Email Address"
               name="email"
               autoComplete="email"
+              inputRef={userRef}
               autoFocus
             />
             <TextField
@@ -68,12 +96,14 @@ export default function SignIn() {
               label="Password"
               type="password"
               id="password"
+              inputRef={passRef}
               autoComplete="current-password"
             />
-            <Button 
+            <Button
               type="submit"
               fullWidth
               variant="contained"
+              onClick={handleSubmit}
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In

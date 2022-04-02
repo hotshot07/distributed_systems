@@ -39,6 +39,7 @@ const Tests = () => {
     if (countryTextFieldValueRef) {
       await axios.get('http://127.0.0.1:3000/view-test-results/'.concat(countryTextFieldValueRef.current.value), { crossDomain: true })
       .then((response) => {
+        console.log(response)
         response.data.Items.forEach((x, i) => {
           x['_id']            = idCounter++;
           x['ochestrator_id'] = x['orchestrator']['user_id'];
@@ -48,6 +49,11 @@ const Tests = () => {
         });
         
         setTableData(response.data.Items);
+        setTableError(false)
+        })
+        .catch(function (error) {
+          setTableError(true);
+          console.log(error.toJSON());
         });
     }
     else{
@@ -56,6 +62,13 @@ const Tests = () => {
     }
   }
   
+
+  function keyPress(e){
+    if(e.keyCode == 13){
+      getData();
+    }
+  }
+
   useEffect(() => {
     if (tableInitialMount.current){
       tableInitialMount.current = false;
@@ -72,18 +85,18 @@ const Tests = () => {
       direction="column"
       alignItems="center"
       justifyContent="center"
-      style={{ minHeight: '100vh' }}
+      style={{ minHeight: '40vh' }}
     >
       <CssBaseline/>
 
         <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
-            <TextField id="outlined-basic" label="Country" variant="outlined" sx={{ m: 2 }} inputRef={countryTextFieldValueRef}/>
+            <TextField id="outlined-basic" label="Country" variant="outlined" sx={{ m: 2 }} onKeyDown={keyPress} inputRef={countryTextFieldValueRef}/>
             <Button variant="outlined" sx={{ m: 2 }} onClick={getData}>Get Results</Button>
         </Stack>
         <Slide direction="up" in={tableError} mountOnEnter unmountOnExit>
-          <Alert severity="error">Results for {countryTextFieldValueRef} could not be loaded.</Alert>
+          <Alert severity="error">Results could not be loaded.</Alert>
         </Slide>
-        <div style={{ height: 400, width: "50%" }}>
+        <div style={{ height: 400, width: "75%" }}>
           <DataGrid
           getRowId={(row) => row._id} 
           columns={columns} 

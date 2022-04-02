@@ -45,7 +45,7 @@ kind: Service
 metadata:
   name: athlete-availability-service
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: aas
   ports:

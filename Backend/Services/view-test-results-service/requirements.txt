@@ -2,3 +2,4 @@ Flask==2.0.3
 boto3==1.21.19
 python-decouple==3.6
 gunicorn==20.1.0
+flask-cors

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: uas
-          image: distributed07/authentication-service:latest
+          image: distributed07/authenticate-service:latest
           imagePullPolicy: Always
           workingDir: /app
           command: ["/bin/sh", "-c"]
