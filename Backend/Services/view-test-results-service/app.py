@@ -1,5 +1,7 @@
 from flask import Flask
+from flask_cors import CORS
 from service import get_test_results
+
 import logging
 from flask_caching import Cache
 from utils import country_list
@@ -12,6 +14,7 @@ cache = Cache(app, config={
     'CACHE_REDIS_URL': 'redis://localhost:6379/0',
 
 })
+CORS(app)
 
 
 @app.route("/view-test-results/<string:country>", methods=["GET"])
