@@ -72,8 +72,10 @@ def create_tester_account():
 
         return update_user_if_exists(**tester_model.account_dict())
 
-
+# helps create admin inactive accounts in auth and user profile
+# returns list 
 @app.route("/admin-inactive-accounts", methods=["GET", "POST"])
+@token_required([ADMIN])
 def admin_inactive_accounts():
     if request.method == "POST":
         data = request.get_json()
@@ -89,15 +91,16 @@ def admin_inactive_accounts():
         if not country or not account_type:
             return jsonify(error_message("Missing data parameters")), 400
 
-        if not check_country(country):
+        
+        organization = check_country(country)
+        
+        if not organization:
             return jsonify(error_message("Invalid country")), 400
 
-        # all checks passed!
+        #all checks passed!
         id_password_list = get_id_and_passwords(1)
 
         account = id_password_list[0]
-
-        organization = country + " " + "ADO"
 
         current_request = create_inactive_account(
             account, account_type, organization)
@@ -105,12 +108,12 @@ def admin_inactive_accounts():
         if current_request.status_code != 200:
             return jsonify(error_message("Could not create account")), 400
 
-        # too keep the same format as down below
+        #too keep the same format as down below
         return jsonify(id_password_list), 200
 
 
 @app.route("/create-n-accounts", methods=["GET", "POST"])
-@token_required([ORCHESTRATOR])
+#@token_required([ORCHESTRATOR])
 def get_n_accounts():
     if request.method == "POST":
         data = request.get_json()
@@ -154,4 +157,8 @@ if __name__ != "__main__":
 
 if __name__ == "__main__":
     app.logger.setLevel(logging.DEBUG)
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5432, debug=True)
+
+
+
+#eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiOTAxNzYyNDYxMDYiLCJleHAiOjE2NDkwMDQ0MDN9.9U5kqicE0sEWRJCcTSeWT1DmZejqRkAYchYzqXe6OEU

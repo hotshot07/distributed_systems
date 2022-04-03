@@ -48,3 +48,8 @@ class Tester(BaseAccountClass):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.account_type = 'Tester'
+        
+class Admin(BaseAccountClass):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.account_type = 'Admin'
