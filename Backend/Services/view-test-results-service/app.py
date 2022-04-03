@@ -4,14 +4,14 @@ import logging
 from flask_caching import Cache
 from utils import country_list
 
-config = {
-    "DEBUG": True,          # some Flask specific configs
-    "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
-    "CACHE_DEFAULT_TIMEOUT": 300
-}
+
 app = Flask(__name__)
-app.config.from_mapping(config)
-cache = Cache(app)
+cache = Cache(app, config={
+    "DEBUG": True,
+    "CACHE_TYPE": "redis",
+    'CACHE_REDIS_URL': 'redis://localhost:6379/0',
+
+})
 
 
 @app.route("/view-test-results/<string:country>", methods=["GET"])
