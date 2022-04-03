@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import { Buffer } from 'buffer';
-
+import { TokenContext } from './Store';
 // MUI imports
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -32,6 +32,7 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
+  const [globalAuthData, setGlobalAuthData] = useContext(TokenContext)
   const userRef = useRef('')
   const passRef = useRef('')
   const [loginError, setLoginError] = useState(false)
@@ -45,16 +46,15 @@ export default function SignIn() {
 
     axios.post("http://127.0.0.1:5000/login", {crossDomain: true }, { headers: { "Authorization": authorization, crossDomain: true } })
       .then((response) => {
-        if (response.status === 200) {
-          console.log(response.data)
-          setLoginError(false);
-        }
-        else {
-          setLoginError(true);
-        }
+        setLoginError(false);
+        setGlobalAuthData({
+          token: response.data,
+          loggedIn: true
+        })
       })
       .catch((err) => {
-        console.log("Err")
+        console.log(globalAuthData);
+        setLoginError(true)
       })
   };
 

@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import { useNavigate } from "react-router-dom";
 
-const pages = ['Tests', 'Organisation', 'Schedule'];
+const pages = ['Tests', 'Organisation', 'Schedule', 'Accounts'];
 
 const ResponsiveAppBar = () => {
   const navigate = useNavigate();
