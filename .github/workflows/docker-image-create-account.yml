@@ -2,7 +2,7 @@ name: Build Docker Images CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, mayank/auth-to-account-service]
     paths: [Backend/Services/account-service/**]
 
 jobs:

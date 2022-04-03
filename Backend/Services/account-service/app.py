@@ -3,6 +3,7 @@ from dynamo_handler import *
 from models import *
 import logging
 from utils import get_id_and_passwords, error_message
+from auth import *
 
 app = Flask(__name__)
 
@@ -18,6 +19,7 @@ def index():
 
 
 @app.route("/update-athlete-account", methods=["GET", "POST"])
+@token_required([ATHLETE])
 def create_athlete_account():
     if request.method == "POST":
 
@@ -35,6 +37,7 @@ def create_athlete_account():
 
 
 @app.route("/update-orch-account", methods=["GET", "POST"])
+@token_required([ORCHESTRATOR])
 def create_orchestrator_account():
     if request.method == "POST":
 
@@ -53,6 +56,7 @@ def create_orchestrator_account():
 
 
 @app.route("/update-tester-account", methods=["GET", "POST"])
+@token_required([TESTER])
 def create_tester_account():
     if request.method == "POST":
 
@@ -106,6 +110,7 @@ def admin_inactive_accounts():
 
 
 @app.route("/create-n-accounts", methods=["GET", "POST"])
+@token_required([ORCHESTRATOR])
 def get_n_accounts():
     if request.method == "POST":
         data = request.get_json()
@@ -136,8 +141,8 @@ def get_n_accounts():
                 return jsonify(error_message("Failed to create all accounts")), 400
             else:
                 accounts_created.append(item)
-
         return jsonify(accounts_created), 200
+
 
 
 if __name__ != "__main__":
