@@ -3,12 +3,14 @@ from flask import Flask, jsonify, request
 from forms import CreateTestForm, UpdateTestResultForm
 from dynamodb_handler import update_test_result, create_test_using_transaction
 from settings import *
+from auth import token_required, WADA, ATHLETE, ORCHESTRATOR, TESTER
 import logging
 
 app = Flask(__name__)
 
 
 @app.route("/assign-athlete-test", methods=['GET', 'POST'])
+@token_required([ORCHESTRATOR])
 def assign_test():
     if request.is_json and request.method == 'POST':
         app.logger.info(f"Received request to assign a test: {request.get_json()}")
@@ -38,6 +40,7 @@ def assign_test():
 
 
 @app.route("/upload-test-result", methods=['GET', 'POST'])
+@token_required([ORCHESTRATOR, TESTER])
 def upload_test_result():
     if request.method == 'POST' and request.is_json:
         app.logger.info(f"Received request to upload a test result: {request.get_json()}")
