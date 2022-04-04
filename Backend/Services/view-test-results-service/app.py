@@ -8,9 +8,12 @@ from utils import country_list
 
 
 app = Flask(__name__)
-cache = Cache(app, config={ 
-   "CACHE_TYPE": "SimpleCache", 
-})
+cache = Cache(
+    app,
+    config={
+        "CACHE_TYPE": "SimpleCache",
+    },
+)
 CORS(app)
 
 
@@ -29,8 +32,8 @@ def view_results(country: str):
         return f"Invalid country name {country}"
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=3000)
 
 if __name__ != "__main__":
     # if we are not running directly, we set the loggers
