@@ -8,11 +8,8 @@ from utils import country_list
 
 
 app = Flask(__name__)
-cache = Cache(app, config={
-    "DEBUG": True,
-    "CACHE_TYPE": "redis",
-    'CACHE_REDIS_URL': 'redis://localhost:6379/0',
-
+cache = Cache(app, config={ 
+   "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
 })
 CORS(app)
 
