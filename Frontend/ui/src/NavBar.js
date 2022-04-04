@@ -24,7 +24,6 @@ const ResponsiveAppBar = () => {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               <Button onClick={() => navigateToPage('Tests')} sx={{ my: 2, color: 'white', display: 'block' }}>Tests</Button>
-              <Button onClick={() => navigateToPage('Organization')} sx={{ my: 2, color: 'white', display: 'block' }}>Organisation</Button>
               <Button onClick={() => navigateToPage('Schedule')} sx={{ my: 2, color: 'white', display: 'block' }}>Schedule Test</Button>
               <Button onClick={() => navigateToPage('Availability')} sx={{ my: 2, color: 'white', display: 'block' }}>Athelete Availability</Button>
               <Button onClick={() => navigateToPage('Accounts')} sx={{ my: 2, color: 'white', display: 'block' }}>Accounts</Button>

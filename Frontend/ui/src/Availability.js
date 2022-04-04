@@ -91,11 +91,11 @@ export default function Availability() {
                 <CssBaseline />
                 <Stack direction="row" spacing={20} justifyContent="center" alignItems="center" divider={<Divider orientation="vertical" flexItem />}>
                     <Box sx={{ alignItems: 'center' }}>
-                        <Stack direction="column" spacing={2} justifyContent="center" alignItems="center">
+                        <Stack direction="column" spacing={2} sx= {{m:2}} justifyContent="center" alignItems="center">
                             <TextField id="standard-basic" label="Athelete ID" variant="standard" sx={{ m: 2 }} onKeyDown={keyPress} inputRef={athleteIdRef} />
                             <Button variant="outlined" sx={{ m: 2 }} onClick={handleAvailabilityClick}>Get Availability</Button>
                         </Stack>
-                        <Box container sx={{ m: 2, width: 300, height: 300, }} >
+                        <Box container sx={{ m: 2, width: 500, height: 300, }} >
                             <DataGrid
                                 rows={tableData}
                                 getRowId={(row) => row._id}
@@ -121,7 +121,7 @@ export default function Availability() {
                             <Box sx={{ alignItems: 'center', m: 2 }}>
                                 <TextField id="standard-basic" label="Hour (24hr)" variant="standard" inputRef={timeToUpdateRef} type="number" defaultValue={12} />
                             </Box>
-                            <Button onClick={handleAvailabilityUpdate} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}> Update Availability </Button>
+                            <Button onClick={handleAvailabilityUpdate} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}> Add Availability </Button>
                         </Stack>
                     </Box>
                 </Stack>
