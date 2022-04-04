@@ -16,12 +16,13 @@ const ResponsiveAppBar = () => {
       console.log(`Going to ${p}`)
       navigate(`/${p}`)
   }
+  // TODO: Add drop down menu for login profile etc.
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
-            Testicle
+            Testrr
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
@@ -30,7 +31,6 @@ const ResponsiveAppBar = () => {
               </Button>
             ))}
           </Box>
-          / TODO: Add drop down menu for login profile etc.
         </Toolbar>
       </Container>
     </AppBar>

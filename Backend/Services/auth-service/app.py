@@ -6,7 +6,7 @@ from functools import wraps
 
 import jwt
 from flask import Flask, jsonify, make_response, request
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from werkzeug.security import check_password_hash
 
 

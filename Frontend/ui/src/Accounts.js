@@ -16,6 +16,8 @@ import { CssBaseline } from '@mui/material';
 
 function Accounts() {
     const [globalAuthData, setGlobalAuthData] = useContext(TokenContext)
+    console.log("GOLBAL AUTH DATA")
+    console.log(globalAuthData)
     return (
         <div>
             <Grid container sx={{ alignItems: 'center', }} justifyContent="center">

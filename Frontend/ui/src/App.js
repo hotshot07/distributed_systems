@@ -13,8 +13,10 @@ const theme = createTheme();
 const TokenContext = React.createContext('token')
 
 function App() {
-  const [globalAuthToken, setGlobalAuthToken] = useState([''])
+  const [globalAuthData, setGlobalAuthData] = useState([''])
 
+  console.log("On the app page!")
+  console.log(globalAuthData)
   return (
     <div className="App">
       <Store>
