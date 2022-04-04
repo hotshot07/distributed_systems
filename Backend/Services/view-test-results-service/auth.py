@@ -8,6 +8,7 @@ ATHLETE = "Athlete"
 ORCHESTRATOR = "Orchestrator"
 TESTER = "Tester"
 WADA = "WADA"
+ADMIN = "Admin"
 INVALID_TOKEN = "Token is Invalid"
 MISSING_TOKEN = "Token is missing"
 SECRET_KEYS = {
@@ -15,6 +16,7 @@ SECRET_KEYS = {
     "Tester": "thisisthesecretkeyTester",
     "Orchestrator": "thisisthesecretkeyOrchestrator",
     "WADA": "thisisthesecretkeyWADA",
+    "Admin": "thisisthesecretkeyADMIN",
 }
 
 

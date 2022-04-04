@@ -14,6 +14,7 @@ from service import (
     query_user_profile_table_id,
 )
 from settings import (
+    ADMIN,
     ATHLETE,
     COULD_NOT_VERIFY,
     INVALID_TOKEN,
