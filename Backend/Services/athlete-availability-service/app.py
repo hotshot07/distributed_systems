@@ -1,5 +1,6 @@
 import logging
 from flask import Flask, request, make_response, jsonify
+from flask_cors import CORS
 
 import services
 import models
@@ -8,10 +9,21 @@ from settings import *
 import logging
 
 app = Flask(__name__)
+CORS_ALLOW_ORIGIN = "*,*"
+CORS_EXPOSE_HEADERS = "*,*"
+CORS_ALLOW_HEADERS = "content-type,*"
+CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
+        allow_headers=CORS_ALLOW_HEADERS.split(","), 
+        expose_headers=CORS_EXPOSE_HEADERS.split(","),   
+        supports_credentials=True)
+
 
 #for request format see readme
-@app.route("/update-athlete-availability", methods=['GET','POST'])
+@app.route("/update-athlete-availability", methods=['OPTIONS','GET','POST'])
 def update_availability():
+    if (request.method == "OPTIONS"):
+        return build_preflight_response(), 200
+
     if request.method == 'POST':
         data = request.get_json()[0]
         availability_form = forms.convert_data_to_form(data)
@@ -60,8 +72,15 @@ def view_availability(athlete_id: str):
         return make_response(NOT_ATHLETE_ID, 403) 
         
 
+def build_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(port=5000, debug=True)
 
 
 if __name__ != '__main__':

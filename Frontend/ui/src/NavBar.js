@@ -7,15 +7,13 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import { useNavigate } from "react-router-dom";
 
-const pages = ['Tests', 'Organisation', 'Schedule', 'Accounts'];
-
 const ResponsiveAppBar = () => {
   const navigate = useNavigate();
 
   const navigateToPage = (p) => {
-      console.log(`Going to ${p}`)
       navigate(`/${p}`)
   }
+  
   // TODO: Add drop down menu for login profile etc.
   return (
     <AppBar position="static">
@@ -25,11 +23,11 @@ const ResponsiveAppBar = () => {
             Testrr
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button key={page} onClick={() => navigateToPage(page)} sx={{ my: 2, color: 'white', display: 'block' }}>
-                {page}
-              </Button>
-            ))}
+              <Button onClick={() => navigateToPage('Tests')} sx={{ my: 2, color: 'white', display: 'block' }}>Tests</Button>
+              <Button onClick={() => navigateToPage('Organization')} sx={{ my: 2, color: 'white', display: 'block' }}>Organisation</Button>
+              <Button onClick={() => navigateToPage('Schedule')} sx={{ my: 2, color: 'white', display: 'block' }}>Schedule Test</Button>
+              <Button onClick={() => navigateToPage('Availability')} sx={{ my: 2, color: 'white', display: 'block' }}>Athelete Availability</Button>
+              <Button onClick={() => navigateToPage('Accounts')} sx={{ my: 2, color: 'white', display: 'block' }}>Accounts</Button>
           </Box>
         </Toolbar>
       </Container>

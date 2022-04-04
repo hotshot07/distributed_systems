@@ -4,9 +4,12 @@ import SignIn from './SignIn.js';
 import NavBar from './NavBar.js'
 import Tests from './Tests.js'
 import Store from './Store.js'
+import Accounts from './Accounts.js';
+import Availability from './Availability.js';
+import Schedule from './Schedule.js';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Accounts from './Accounts.js';
+
 
 const theme = createTheme();
 
@@ -27,6 +30,8 @@ function App() {
               <Route path="/" element={<SignIn />} />
               <Route path="/Tests" element={<Tests/>} />
               <Route path="/Accounts" element={<Accounts />} />
+              <Route path='/Availability' element={<Availability />} />
+              <Route path='/Schedule' element={<Schedule />}/>
             </Routes>
           </BrowserRouter>
         </ThemeProvider>

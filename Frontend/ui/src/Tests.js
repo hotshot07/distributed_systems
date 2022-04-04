@@ -53,6 +53,7 @@ const Tests = () => {
         })
         .catch(function (error) {
           setTableError(true);
+          console.log(globalAuthData);
           console.log(error.toJSON());
         });
     }
