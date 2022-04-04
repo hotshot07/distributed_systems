@@ -19,6 +19,20 @@ def view_results(country: str):
     :return: json data
     """
 
+    def validate_country(country):
+        l_country = country.split()
+        if len(l_country) > 0:
+            for idx, word in enumerate(l_country):
+                if word.lower() in ['of', 'the', 'former', 'part']:
+                    l_country[idx] = word.lower()
+                else:
+                    l_country[idx] = word.capitalize()
+                f_country = ' '.join(l_country)
+            country = f_country
+        return country
+
+    country = validate_country(country)
+    
     if country in country_list:
         return get_test_results(country=country)
     else:
