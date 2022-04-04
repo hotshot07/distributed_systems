@@ -1,17 +1,13 @@
 from boto3.dynamodb.conditions import Key
 import boto3
-# from settings import (
-#     ATHLETE_TEST_TABLE,
-#     AWS_ACCESS_KEY_ID,
-#     AWS_SECRET_ACCESS_KEY,
-#     REGION_NAME,
-# )
+from settings import (
+    ATHLETE_TEST_TABLE,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    REGION_NAME,
+)
 
-AWS_ACCESS_KEY_ID='AKIAZN3M6N6WYMZ2TGMF'
-AWS_SECRET_ACCESS_KEY='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'
-REGION_NAME='eu-west-1'
 
-ATHLETE_TEST_TABLE = "AthleteTest"
 def connect():
     """
     Connection to AWS dynamodb

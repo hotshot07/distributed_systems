@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from service import get_test_results
-from auth import token_required, TESTER, ORCHESTRATOR, ADMIN
+from auth import token_required, WADA, ORCHESTRATOR, ADMIN
 
 import logging
 from flask_caching import Cache
@@ -19,7 +19,7 @@ CORS(app)
 
 
 @app.route("/view-test-results/<string:country>", methods=["GET"])
-@token_required([TESTER, ORCHESTRATOR, ADMIN])
+@token_required([WADA, ORCHESTRATOR, ADMIN])
 @cache.cached(timeout=50)
 def view_results(country: str):
     """
