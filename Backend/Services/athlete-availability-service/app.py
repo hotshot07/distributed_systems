@@ -6,13 +6,13 @@ import services
 import models
 import forms
 from settings import *
-from auth import token_required, WADA, ATHLETE, ORCHESTRATOR
+from auth import token_required, WADA, ATHLETE, ORCHESTRATOR, ADMIN
 
 app = Flask(__name__)
 
 #for request format see readme
 @app.route("/update-athlete-availability", methods=['GET','POST'])
-@token_required([ATHLETE])
+@token_required([ADMIN, ATHLETE])
 def update_availability():
     if request.method == 'POST':
         data = request.get_json()[0]
@@ -47,7 +47,7 @@ def update_availability():
        
         
 @app.route("/view-athlete-availability/<string:athlete_id>", methods=['GET'])
-@token_required([ORCHESTRATOR, WADA])
+@token_required([ADMIN, ORCHESTRATOR, WADA])
 def view_availability(athlete_id: str):
     if request.method == 'GET':
         try:
