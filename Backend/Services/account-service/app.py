@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from dynamo_handler import *
 from models import *
 import logging
-from utils import get_id_and_passwords, error_message
+from utils import get_id_and_passwords, error_message, validate_country
 
 app = Flask(__name__)
 
@@ -74,7 +74,7 @@ def admin_inactive_accounts():
     if request.method == "POST":
         data = request.get_json()
 
-        country = data.get("Country")
+        country = validate_country(data.get("Country"))
         account_type = data.get("AccountType")
 
         app.logger.info(f"Recieved request to create account {data}")
