@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: view-test-results-service-deployment
+  labels:
+    app: vtrs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vtrs
+  template:
+    metadata:
+      labels:
+        app: vtrs
+    spec:
+      containers:
+        - name: vtrs
+          image: distributed07/view-test-results-service:latest
+          imagePullPolicy: Always
+          workingDir: /app
+          command: ["/bin/sh", "-c"]
+          args: ["gunicorn app:app --bind 0.0.0.0:5000 --log-level=debug"]
+          ports:
+            - containerPort: 5000
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: REGION_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret
+                  key: REGION_NAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: view-test-results-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: vtrs
+  ports:
+    - port: 6000
+      targetPort: 5000
+      protocol: TCP
+      name: view-test-results-service
