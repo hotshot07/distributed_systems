@@ -52,4 +52,6 @@ class Tester(BaseAccountClass):
 class Admin(BaseAccountClass):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.organization = 'WADA'
+        self.country = 'WADA'
         self.account_type = 'Admin'

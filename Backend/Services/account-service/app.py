@@ -20,7 +20,7 @@ def index():
 
 @app.route("/update-athlete-account", methods=["GET", "POST"])
 @token_required([ATHLETE])
-def create_athlete_account():
+def update_athlete_account():
     if request.method == "POST":
 
         data = request.get_json()
@@ -38,7 +38,7 @@ def create_athlete_account():
 
 @app.route("/update-orch-account", methods=["GET", "POST"])
 @token_required([ORCHESTRATOR])
-def create_orchestrator_account():
+def update_orchestrator_account():
     if request.method == "POST":
 
         data = request.get_json()
@@ -57,7 +57,7 @@ def create_orchestrator_account():
 
 @app.route("/update-tester-account", methods=["GET", "POST"])
 @token_required([TESTER])
-def create_tester_account():
+def update_tester_account():
     if request.method == "POST":
 
         data = request.get_json()
@@ -71,6 +71,25 @@ def create_tester_account():
             return jsonify(error_message("Missing data parameters")), 400
 
         return update_user_if_exists(**tester_model.account_dict())
+    
+    
+@app.route("/update-admin-account", methods=["GET", "POST"])
+@token_required([ADMIN])
+def update_admin_account():
+    if request.method == "POST":
+
+        data = request.get_json()
+        admin_model = Admin(**data)
+
+        app.logger.info(f"Recieved update account request for Admin {data}")
+
+        # will return false if any of the required fields are missing
+        if not admin_model.check():
+            app.logger.error("Missing required fields")
+            return jsonify(error_message("Missing data parameters")), 400
+
+        return update_user_if_exists(**admin_model.account_dict())
+
 
 # helps create admin inactive accounts in auth and user profile
 # returns list 
@@ -113,7 +132,7 @@ def admin_inactive_accounts():
 
 
 @app.route("/create-n-accounts", methods=["GET", "POST"])
-#@token_required([ORCHESTRATOR])
+@token_required([ORCHESTRATOR])
 def get_n_accounts():
     if request.method == "POST":
         data = request.get_json()
