@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-service-deployment
+  name: account-service-deployment
   labels:
-    app: uas
+    app: as
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: uas
+      app: as
   template:
     metadata:
       labels:
-        app: uas
+        app: as
     spec:
       containers:
-        - name: uas
-          image: distributed07/authenticate-service:latest
+        - name: as
+          image: distributed07/account-service:latest
           imagePullPolicy: Always
           workingDir: /app
           command: ["/bin/sh", "-c"]
@@ -43,16 +43,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service
-  annotations:
-    service.beta.kubernetes.io/azure-load-balancer-resource-group: distributed_bois
+  name: account-service
 spec:
-  loadBalancerIP: 20.224.88.180
   type: LoadBalancer
   selector:
-    app: uas
+    app: as
   ports:
-    - port: 3000
+    - port: 2000
       targetPort: 5000
-      protocol: TCP
-      name: auth-service
+      name: account-service

@@ -3,21 +3,30 @@ from distutils.command.build import build
 import logging
 import re
 from functools import wraps
+from typing import List
 
 import jwt
 from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
 from werkzeug.security import check_password_hash
 
-
-from service import query_auth_table, query_user_profile_table
+from service import (
+    query_auth_table,
+    query_user_profile_table_email,
+    query_user_profile_table_id,
+)
 from settings import (
+    ATHLETE,
     COULD_NOT_VERIFY,
     INVALID_TOKEN,
     MISSING_TOKEN,
+    ORCHESTRATOR,
+    SECRET_KEYS,
+    TESTER,
     TOKEN_EXPIRY_MINUTES,
     USER_AUTHENTICATED,
     USER_DOES_NOT_EXIST,
+    WADA,
 )
 
 app = Flask(__name__)
@@ -29,27 +38,45 @@ CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
         expose_headers=CORS_EXPOSE_HEADERS.split(","),   
         supports_credentials=True)
 
-app.config["SECRET_KEY"] = "thisisthesecretkey"
+app.config["SECRET_KEY"] = SECRET_KEYS
 
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        if "X-Access-Token" in request.headers:
-            token = request.headers["X-Access-Token"]
-
-        if not token:
-            return make_response(MISSING_TOKEN, 401)
+def decode_token(Users, token):
+    for user in Users:
         try:
             data = jwt.decode(
-                token, app.config["SECRET_KEY"], algorithms=["HS256"])
+                token, app.config["SECRET_KEY"][user], algorithms=["HS256"]
+            )
+            if data:
+                return user
         except:
-            return make_response(INVALID_TOKEN, 401)
+            continue
 
-        return f(*args, **kwargs)
 
-    return decorated
+def token_required(Users: List):
+    def token(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            token = None
+            if "X-Access-Token" in request.headers:
+                token = request.headers["X-Access-Token"]
+
+            if not token:
+                return make_response(MISSING_TOKEN, 401)
+            user = decode_token(Users, token)
+            try:
+                data = jwt.decode(
+                    token, app.config["SECRET_KEY"][user], algorithms=["HS256"]
+                )
+
+            except:
+                return make_response(INVALID_TOKEN, 401)
+
+            return f(*args, **kwargs)
+
+        return decorated
+
+    return token
 
 
 @app.route("/unprotected")
@@ -58,7 +85,7 @@ def unprotected():
 
 
 @app.route("/protected")
-@token_required
+@token_required([ATHLETE, TESTER])
 def protected():
     return jsonify({"message": "This is only available if you authenticated"})
 
@@ -128,8 +155,7 @@ def login():
 # Check if supplied login credential is an email.
 def is_email(email_or_id):
     return any(
-        re.findall(
-            "([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id)
+        re.findall("([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id)
     )
 
 

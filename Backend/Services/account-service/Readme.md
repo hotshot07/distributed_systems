@@ -78,4 +78,20 @@ request to create-n-accounts
 #     "AccountType": "Athlete"
 # }
 # orchestrator can create accounts for tester or athlete (Specify account type in JSON))
+
+
+# ADMIN ACCOUNTSSSS!!!!!
+# [
+#     {
+#         "Id": "90176246106",
+#         "Password": "cfb88a6f"
+#     }
+# ]
+
+# [
+#     {
+#         "Id": "99657640665",
+#         "Password": "2d35aa10"
+#     }
+# ]
 ```

@@ -1,12 +1,13 @@
 import logging
 from flask import Flask, request, make_response, jsonify
 from flask_cors import CORS
+import logging
 
 import services
 import models
 import forms
 from settings import *
-import logging
+from auth import token_required, WADA, ATHLETE, ORCHESTRATOR
 
 app = Flask(__name__)
 CORS_ALLOW_ORIGIN = "*,*"
@@ -20,6 +21,7 @@ CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
 
 #for request format see readme
 @app.route("/update-athlete-availability", methods=['OPTIONS','GET','POST'])
+@token_required([ATHLETE])
 def update_availability():
     if (request.method == "OPTIONS"):
         return build_preflight_response(), 200
@@ -57,6 +59,7 @@ def update_availability():
        
         
 @app.route("/view-athlete-availability/<string:athlete_id>", methods=['GET'])
+@token_required([ORCHESTRATOR, WADA])
 def view_availability(athlete_id: str):
     if request.method == 'GET':
         try:

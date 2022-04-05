@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-service-deployment
+  name: view-test-results-service-deployment
   labels:
-    app: uas
+    app: vtrs
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: uas
+      app: vtrs
   template:
     metadata:
       labels:
-        app: uas
+        app: vtrs
     spec:
       containers:
-        - name: uas
-          image: distributed07/authenticate-service:latest
+        - name: vtrs
+          image: distributed07/view-test-results-service:latest
           imagePullPolicy: Always
           workingDir: /app
           command: ["/bin/sh", "-c"]
@@ -43,16 +43,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service
-  annotations:
-    service.beta.kubernetes.io/azure-load-balancer-resource-group: distributed_bois
+  name: view-test-results-service
 spec:
-  loadBalancerIP: 20.224.88.180
   type: LoadBalancer
   selector:
-    app: uas
+    app: vtrs
   ports:
-    - port: 3000
+    - port: 6000
       targetPort: 5000
       protocol: TCP
-      name: auth-service
+      name: view-test-results-service
