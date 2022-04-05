@@ -19,22 +19,19 @@ spec:
           image: distributed07/react-frontend-service:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 3000
+            - containerPort: 80
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: react-frontend-service
-  annotations:
-    service.beta.kubernetes.io/azure-load-balancer-resource-group: distributed_bois
 spec:
-  loadBalancerIP: 20.224.88.180
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: rfs
   ports:
-    - port: 9000
-      targetPort: 3000
+    - port: 80
+      targetPort: 80
       protocol: TCP
-      name: react-frontend-service
+      nodePort: 31000
