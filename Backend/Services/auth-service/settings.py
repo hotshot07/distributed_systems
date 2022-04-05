@@ -18,9 +18,12 @@ SECRET_KEYS = {
 USER_DOES_NOT_EXIST = "User does not exist"
 INVALID_TOKEN = "Token is Invalid"
 MISSING_TOKEN = "Token is missing"
-USER_AUTHENTICATED = "Token returned.User authenticated"
+USER_AUTHENTICATED = "Token returned. User is authenticated"
 COULD_NOT_VERIFY = "Could not verify"
+
 TOKEN_EXPIRY_MINUTES = 30
+ACTIVE_ACCOUNT = "Active"
+
 ATHLETE = "Athlete"
 ORCHESTRATOR = "Orchestrator"
 TESTER = "Tester"

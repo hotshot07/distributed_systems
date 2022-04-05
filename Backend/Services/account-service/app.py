@@ -19,7 +19,7 @@ def index():
 
 
 @app.route("/update-athlete-account", methods=["GET", "POST"])
-@token_required([ADMIN,ATHLETE])
+@token_required([ADMIN, ATHLETE])
 def update_athlete_account():
     if request.method == "POST":
 
@@ -37,7 +37,7 @@ def update_athlete_account():
 
 
 @app.route("/update-orch-account", methods=["GET", "POST"])
-@token_required([ADMIN,ORCHESTRATOR])
+@token_required([ADMIN, ORCHESTRATOR])
 def update_orchestrator_account():
     if request.method == "POST":
 
@@ -56,7 +56,7 @@ def update_orchestrator_account():
 
 
 @app.route("/update-tester-account", methods=["GET", "POST"])
-@token_required([ADMIN,TESTER])
+@token_required([ADMIN, TESTER])
 def update_tester_account():
     if request.method == "POST":
 
@@ -71,8 +71,8 @@ def update_tester_account():
             return jsonify(error_message("Missing data parameters")), 400
 
         return update_user_if_exists(**tester_model.account_dict())
-    
-    
+
+
 @app.route("/update-admin-account", methods=["GET", "POST"])
 @token_required([ADMIN])
 def update_admin_account():
@@ -92,7 +92,7 @@ def update_admin_account():
 
 
 # helps create admin inactive accounts in auth and user profile
-# returns list 
+# returns list
 @app.route("/admin-inactive-accounts", methods=["GET", "POST"])
 @token_required([ADMIN])
 def admin_inactive_accounts():
@@ -110,13 +110,12 @@ def admin_inactive_accounts():
         if not country or not account_type:
             return jsonify(error_message("Missing data parameters")), 400
 
-        
         organization = check_country(country)
-        
+
         if not organization:
             return jsonify(error_message("Invalid country")), 400
 
-        #all checks passed!
+        # all checks passed!
         id_password_list = get_id_and_passwords(1)
 
         account = id_password_list[0]
@@ -127,12 +126,12 @@ def admin_inactive_accounts():
         if current_request.status_code != 200:
             return jsonify(error_message("Could not create account")), 400
 
-        #too keep the same format as down below
+        # too keep the same format as down below
         return jsonify(id_password_list), 200
 
 
 @app.route("/create-n-accounts", methods=["GET", "POST"])
-@token_required([ADMIN,ORCHESTRATOR])
+@token_required([ADMIN, ORCHESTRATOR])
 def get_n_accounts():
     if request.method == "POST":
         data = request.get_json()
@@ -166,7 +165,6 @@ def get_n_accounts():
         return jsonify(accounts_created), 200
 
 
-
 if __name__ != "__main__":
     # if we are not running directly, we set the loggers
     gunicorn_logger = logging.getLogger("gunicorn.error")
@@ -176,4 +174,4 @@ if __name__ != "__main__":
 
 if __name__ == "__main__":
     app.logger.setLevel(logging.DEBUG)
-    app.run(host="0.0.0.0", port=5432, debug=True)
+    app.run(port=5000, debug=True)

@@ -46,8 +46,6 @@ def token_required(Users: List):
             try:
                 data = jwt.decode(
                     token, SECRET_KEYS[user], algorithms=["HS256"])
-                
-                print(data)
 
             except:
                 return make_response(INVALID_TOKEN, 401)
