@@ -11,12 +11,13 @@ WADA = "WADA"
 ADMIN = "Admin"
 INVALID_TOKEN = "Token is Invalid"
 MISSING_TOKEN = "Token is missing"
+
 SECRET_KEYS = {
     "Athlete": "thisisthesecretkeyAthlete",
     "Tester": "thisisthesecretkeyTester",
     "Orchestrator": "thisisthesecretkeyOrchestrator",
     "WADA": "thisisthesecretkeyWADA",
-    "Admin": "thisisthesecretkeyADMIN",
+    "Admin": "thisisthesecretkeyAdmin"
 }
 
 
@@ -42,7 +43,8 @@ def token_required(Users: List):
                 return make_response(MISSING_TOKEN, 401)
             user = decode_token(Users, token)
             try:
-                data = jwt.decode(token, SECRET_KEYS[user], algorithms=["HS256"])
+                data = jwt.decode(
+                    token, SECRET_KEYS[user], algorithms=["HS256"])
 
             except:
                 return make_response(INVALID_TOKEN, 401)

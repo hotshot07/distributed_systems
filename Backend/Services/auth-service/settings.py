@@ -12,6 +12,7 @@ SECRET_KEYS = {
     "Tester": "thisisthesecretkeyTester",
     "Orchestrator": "thisisthesecretkeyOrchestrator",
     "WADA": "thisisthesecretkeyWADA",
+    "Admin": "thisisthesecretkeyAdmin"
 }
 
 USER_DOES_NOT_EXIST = "User does not exist"
@@ -24,3 +25,4 @@ ATHLETE = "Athlete"
 ORCHESTRATOR = "Orchestrator"
 TESTER = "Tester"
 WADA = "WADA"
+ADMIN = "Admin"
