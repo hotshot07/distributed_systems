@@ -44,10 +44,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: auth-service
-  annotations:
-    service.beta.kubernetes.io/azure-load-balancer-resource-group: distributed_bois
 spec:
-  loadBalancerIP: 20.224.88.180
   type: LoadBalancer
   selector:
     app: uas

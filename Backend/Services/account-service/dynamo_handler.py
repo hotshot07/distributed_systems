@@ -34,7 +34,6 @@ CountryAdo = resource.Table(COUNTRY_ADO)
 
 def update_user_if_exists(**kwargs):
     try:
-
         response = UserProfile.update_item(
             Key={
                 'Organization': kwargs['Organization'],
@@ -103,7 +102,7 @@ def check_country(country):
     else:
         if response['Count'] == 0:
             return False
-        return True
+        return response['Items'][0]['Ado']
 
 
 def create_inactive_account(item, account_type, organization):

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-service-deployment
+  name: athlete-availability-service-deployment
   labels:
-    app: uas
+    app: aas
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: uas
+      app: aas
   template:
     metadata:
       labels:
-        app: uas
+        app: aas
     spec:
       containers:
-        - name: uas
-          image: distributed07/authenticate-service:latest
+        - name: aas
+          image: distributed07/athlete-availability-service:latest
           imagePullPolicy: Always
           workingDir: /app
           command: ["/bin/sh", "-c"]
@@ -43,16 +43,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service
-  annotations:
-    service.beta.kubernetes.io/azure-load-balancer-resource-group: distributed_bois
+  name: athlete-availability-service
 spec:
-  loadBalancerIP: 20.224.88.180
   type: LoadBalancer
   selector:
-    app: uas
+    app: aas
   ports:
-    - port: 3000
+    - port: 4000
       targetPort: 5000
       protocol: TCP
-      name: auth-service
+      name: athlete-availability-service
