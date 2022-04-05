@@ -7,7 +7,7 @@ import services
 import models
 import forms
 from settings import *
-from auth import token_required, WADA, ATHLETE, ORCHESTRATOR
+from auth import token_required, WADA, ATHLETE, ORCHESTRATOR, ADMIN
 
 app = Flask(__name__)
 CORS_ALLOW_ORIGIN = "*,*"
@@ -19,9 +19,8 @@ CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
         supports_credentials=True)
 
 
-#for request format see readme
 @app.route("/update-athlete-availability", methods=['OPTIONS','GET','POST'])
-@token_required([ATHLETE])
+@token_required([ADMIN, ATHLETE])
 def update_availability():
     if (request.method == "OPTIONS"):
         return build_preflight_response(), 200
@@ -59,7 +58,7 @@ def update_availability():
        
         
 @app.route("/view-athlete-availability/<string:athlete_id>", methods=['GET'])
-@token_required([ORCHESTRATOR, WADA])
+@token_required([ADMIN, ORCHESTRATOR, WADA])
 def view_availability(athlete_id: str):
     if request.method == 'GET':
         try:
@@ -91,4 +90,4 @@ if __name__ != '__main__':
     gunicorn_logger = logging.getLogger('gunicorn.error')
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
-    app.logger.info("Create account service is now running!")
+    app.logger.info("Athlete availability service is now running!")

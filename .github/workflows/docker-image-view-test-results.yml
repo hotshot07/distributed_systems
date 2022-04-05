@@ -2,8 +2,8 @@ name: Build Docker Images CI
 
 on:
   push:
-    branches: [ main ]
-    paths: Backend/Services/view-test-results-service/**
+    branches: [main]
+    paths: [Backend/Services/view-test-results-service/**]
 
 jobs:
   docker:

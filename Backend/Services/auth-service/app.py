@@ -27,6 +27,7 @@ from settings import (
     USER_AUTHENTICATED,
     USER_DOES_NOT_EXIST,
     WADA,
+    ADMIN,
 )
 
 app = Flask(__name__)
@@ -85,7 +86,7 @@ def unprotected():
 
 
 @app.route("/protected")
-@token_required([ATHLETE, TESTER])
+@token_required([ATHLETE, TESTER, ADMIN, ORCHESTRATOR, WADA])
 def protected():
     return jsonify({"message": "This is only available if you authenticated"})
 
@@ -150,12 +151,23 @@ def login():
             COULD_NOT_VERIFY, 401, {
                 "WWW-Authenticate": 'Basic realm="Login Required"'}
         )
+        # Create the response with the JWT in both cookies and X-Access-Token header.
+        response = make_response(f"{USER_AUTHENTICATED} >> {account_type}")
+        response.headers["X-Access-Token"] = token
+        response.set_cookie("Access Token", token)
+
+        return response
+    return make_response(
+        COULD_NOT_VERIFY, 401, {
+            "WWW-Authenticate": 'Basic realm="Login Required"'}
+    )
 
 
 # Check if supplied login credential is an email.
 def is_email(email_or_id):
     return any(
-        re.findall("([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id)
+        re.findall(
+            "([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id)
     )
 
 
