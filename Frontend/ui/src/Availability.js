@@ -24,6 +24,8 @@ import {
 // pick a date util library
 import DateFnsUtils from '@date-io/date-fns';
 
+const ENDPOINT = "20.224.88.180";
+const PORT = 4000
 
 const columns = [
     { field: 'athlete_id', headerName: 'Athlete ID' },
@@ -48,7 +50,7 @@ export default function Availability() {
 
     async function handleAvailabilityClick() {
         let idCounter = 0;
-        await axios.get('http://localhost:5000/view-athlete-availability/'.concat(athleteIdRef.current.value), { crossDomain: true })
+        await axios.get(`http://${ENDPOINT}:${PORT}/view-athlete-availability/`.concat(athleteIdRef.current.value), { crossDomain: true })
             .then((response) => {
                 response.data.forEach((x, i) => { x['_id'] = idCounter++ });
                 console.log(response);
@@ -61,14 +63,7 @@ export default function Availability() {
 
     async function handleAvailabilityUpdate() {
         const utcTimeToUpdate = dateToUpdate.toISOString().split("T")[0] + " " + timeToUpdateRef.current.value + ":00:00"
-        const form = JSON.stringify([{
-            athlete_id: athleteIdUpdateRef.current.value,
-            datetimeUTC: utcTimeToUpdate,
-            location: locationUpdateRef.current.value,
-            location_country: countryUpdateRef.current.value
-        }]);
-        console.log(form)
-        await axios.post('http://localhost:5000/update-athlete-availability', 
+        await axios.post(`http://${ENDPOINT}:${PORT}/update-athlete-availability`, 
             [{
                 athlete_id: athleteIdUpdateRef.current.value,
                 datetimeUTC: utcTimeToUpdate,

@@ -48,7 +48,7 @@ const Tests = () => {
             x['athlete_id'] = x['athlete']['user_id']
             x['tester_name'] = x['tester']['first_name'] + " " + x['tester']['second_name']
           });
-
+          setTableData(response.data.Items)
           setTableError(false)
         })
         .catch(function (error) {
@@ -75,7 +75,7 @@ const Tests = () => {
       tableInitialMount.current = false;
     }
     else {
-      console.log("Table data changed")
+      console.log(tableData)
     }
   }, [tableData])
 
