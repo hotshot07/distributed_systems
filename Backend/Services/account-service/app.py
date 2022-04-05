@@ -19,7 +19,7 @@ def index():
 
 
 @app.route("/update-athlete-account", methods=["GET", "POST"])
-@token_required([ATHLETE])
+@token_required([ADMIN,ATHLETE])
 def update_athlete_account():
     if request.method == "POST":
 
@@ -37,7 +37,7 @@ def update_athlete_account():
 
 
 @app.route("/update-orch-account", methods=["GET", "POST"])
-@token_required([ORCHESTRATOR])
+@token_required([ADMIN,ORCHESTRATOR])
 def update_orchestrator_account():
     if request.method == "POST":
 
@@ -56,7 +56,7 @@ def update_orchestrator_account():
 
 
 @app.route("/update-tester-account", methods=["GET", "POST"])
-@token_required([TESTER])
+@token_required([ADMIN,TESTER])
 def update_tester_account():
     if request.method == "POST":
 
@@ -132,7 +132,7 @@ def admin_inactive_accounts():
 
 
 @app.route("/create-n-accounts", methods=["GET", "POST"])
-@token_required([ORCHESTRATOR])
+@token_required([ADMIN,ORCHESTRATOR])
 def get_n_accounts():
     if request.method == "POST":
         data = request.get_json()
@@ -177,7 +177,3 @@ if __name__ != "__main__":
 if __name__ == "__main__":
     app.logger.setLevel(logging.DEBUG)
     app.run(host="0.0.0.0", port=5432, debug=True)
-
-
-
-#eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiOTAxNzYyNDYxMDYiLCJleHAiOjE2NDkwMDQ0MDN9.9U5kqicE0sEWRJCcTSeWT1DmZejqRkAYchYzqXe6OEU
