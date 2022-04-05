@@ -1,8 +1,9 @@
 FROM node:16.14.2
-WORKDIR /usr/src/app
-COPY package*.json ./
-ADD package.json /usr/src/app/package.json
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package.json ./
+COPY package-lock.json ./
 RUN npm install
-COPY . .
+COPY . ./
 EXPOSE 3000
 CMD ["npm ","start"];

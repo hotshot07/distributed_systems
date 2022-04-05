@@ -1,4 +1,4 @@
-name: Build Docker Images CI - React Frontend
+name: Build Docker Image CI - React Frontend
 
 on:
   push:

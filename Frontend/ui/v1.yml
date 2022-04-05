@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-frontend-service-deployment
+  labels:
+    app: rfs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rfs
+  template:
+    metadata:
+      labels:
+        app: rfs
+    spec:
+      containers:
+        - name: rfs
+          image: distributed07/react-frontend-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-frontend-service
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-resource-group: distributed_bois
+spec:
+  loadBalancerIP: 20.224.88.180
+  type: LoadBalancer
+  selector:
+    app: rfs
+  ports:
+    - port: 9000
+      targetPort: 3000
+      protocol: TCP
+      name: react-frontend-service
