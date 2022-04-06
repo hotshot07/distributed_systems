@@ -144,6 +144,8 @@ def login():
             )
             # Create the response with the JWT in both cookies and X-Access-Token header.
             response = make_response(token)
+            response.headers.add('Access-Control-Allow-Headers', "*")
+            response.headers.add('Access-Control-Allow-Methods', "*")
             response.headers.add("Access-Control-Allow-Origin", "*")
 
             return response, 200
