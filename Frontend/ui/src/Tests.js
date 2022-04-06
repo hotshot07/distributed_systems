@@ -68,7 +68,7 @@ const Tests = () => {
 
 
   function keyPress(e) {
-    if (e.keyCode == 13) {
+    if (e.keyCode === 13) {
       getData();
     }
   }
