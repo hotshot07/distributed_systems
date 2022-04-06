@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: "16.13.2"
       - name: Build node app
-        working-directory: Frontend\ui
+        working-directory: Frontend/ui
         run: npm run build
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
