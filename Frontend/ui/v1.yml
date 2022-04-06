@@ -25,13 +25,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: react-frontend-service
+  name: react-frontend-service-deployment
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-resource-group: distributed_bois
 spec:
-  type: NodePort
+  loadBalancerIP: 20.224.88.180
+  type: LoadBalancer
   selector:
     app: rfs
   ports:
     - port: 80
       targetPort: 80
       protocol: TCP
-      nodePort: 31000
+      name: react-frontend-service-deployment
