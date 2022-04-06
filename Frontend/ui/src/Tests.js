@@ -26,7 +26,7 @@ const columns = [
 ]
 
 const ENDPOINT = '20.224.88.180';
-const PORT = '6000';
+const PORT = '6001';
 
 const Tests = () => {
   const [tableData, setTableData] = useState([]);
