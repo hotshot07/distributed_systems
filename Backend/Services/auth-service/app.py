@@ -39,7 +39,7 @@ CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
         expose_headers=CORS_EXPOSE_HEADERS.split(","),   
         supports_credentials=True)
 
-app.config["SECRET_KEY"] = SECRET_KEYS
+app.config["SECRET_KEY"] = SECRET_KEYS #
 
 
 def decode_token(Users, token):
