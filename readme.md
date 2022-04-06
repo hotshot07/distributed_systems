@@ -9,5 +9,3 @@ FrontEnd/
 Backend/
 --> Main App service
 --> Services/
-
-..
