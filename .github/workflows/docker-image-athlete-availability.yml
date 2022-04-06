@@ -2,7 +2,7 @@ name: Build Docker Images CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, react-development]
     paths: [Backend/Services/athlete-availability-service/**]
 
 jobs:
