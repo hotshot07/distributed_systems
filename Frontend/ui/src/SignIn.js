@@ -62,7 +62,7 @@ export default function SignIn() {
         <CssBaseline />
         <Grid container sx={{ alignItems: 'center', }} justifyContent="center">
           <Box component="div" src={logo}>
-            <img style={{ width: 300, height: 300 }} src={logo} />
+            <img style={{ width: 300, height: 300 }} src={logo} alt="logo"/>
           </Box>
         </Grid>
         <Box
