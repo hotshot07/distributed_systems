@@ -114,7 +114,7 @@ def login():
         username = username.strip()
         # Check if attempted login is with email. Query UserProfiles table for ID if email.
         if is_email(username):
-            user_profile_response = query_user_profile_table(username)
+            user_profile_response = query_user_profile_table_email(username)
 
             if user_profile_response["Count"] == 0:
                 return make_response(USER_DOES_NOT_EXIST, 404)
