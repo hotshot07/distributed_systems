@@ -25,6 +25,9 @@ const columns = [
   { field: 'tester_name', headerName: 'Tester' }
 ]
 
+const ENDPOINT = '20.224.88.180';
+const PORT = '6000';
+
 const Tests = () => {
   const [tableData, setTableData] = useState([]);
   const [tableError, setTableError] = useState(false);
@@ -38,7 +41,7 @@ const Tests = () => {
     console.log(countryTextFieldValueRef.current.value);
 
     if (countryTextFieldValueRef) {
-      await axios.get('http://127.0.0.1:3000/view-test-results/'.concat(countryTextFieldValueRef.current.value), { crossDomain: true })
+      await axios.get(`http://${ENDPOINT}:${PORT}/view-test-results/`.concat(countryTextFieldValueRef.current.value), { crossDomain: true })
         .then((response) => {
           console.log(response)
           response.data.Items.forEach((x, i) => {

@@ -19,6 +19,9 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 // Networking
 import axios from "axios";
 
+const ENDPOINT = '20.224.88.180';
+const PORT = '3000';
+
 const theme = createTheme();
 
 export default function SignIn() {
@@ -35,7 +38,7 @@ export default function SignIn() {
 
     const authorization = `Basic ${basicAuthAsToken}`
     
-    axios.post("http://127.0.0.1:5000/login", { crossDomain: true }, { headers: { "Authorization": authorization, crossDomain: true } })
+    axios.post(`http://${ENDPOINT}:${PORT}/login`, { crossDomain: true }, { headers: { "Authorization": authorization, crossDomain: true } })
       .then((response) => {
         setLoginError(false);
         setGlobalAuthData({
