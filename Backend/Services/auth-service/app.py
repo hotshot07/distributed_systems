@@ -1,5 +1,4 @@
 import datetime
-from distutils.command.build import build
 import logging
 import re
 from functools import wraps
@@ -39,7 +38,8 @@ CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
         expose_headers=CORS_EXPOSE_HEADERS.split(","),   
         supports_credentials=True)
 
-app.config["SECRET_KEY"] = SECRET_KEYS #
+
+app.config["SECRET_KEY"] = SECRET_KEYS
 
 
 def decode_token(Users, token):
@@ -91,46 +91,49 @@ def protected():
     return jsonify({"message": "This is only available if you authenticated"})
 
 
-@app.route("/login", methods=["POST", "OPTIONS"])
+@app.route("/login", methods=["POST"])
 def login():
-    print(request)
     if (request.method == "OPTIONS"):
         return build_preflight_response(), 200
-
-    elif (request.method == "POST"):
+    else:
         if (
             not request.authorization
             or not request.authorization.username
             or not request.authorization.password
         ):
-            print(request.__dict__)
             return make_response(
                 COULD_NOT_VERIFY, 401, {"Authentication": 'login required"'}
             )
+
         # Aquire username and password from auth headers
         username = request.authorization.username
         password = request.authorization.password
-        print(request.__dict__)
-        username = username.strip()
-        # Check if attempted login is with email. Query UserProfiles table for ID if email.
-        if is_email(username):
-            user_profile_response = query_user_profile_table_email(username)
 
-            if user_profile_response["Count"] == 0:
+        username = username.strip()
+        # Check if attempted login is with email. Query UserProfiles table for ID if email
+        if is_email(username):
+            response = query_user_profile_table_email(username)
+
+            if response["Count"] == 0:
                 return make_response(USER_DOES_NOT_EXIST, 404)
 
-            user_id = user_profile_response["Items"][0]["Id"]
+            user_id = response["Items"][0]["Id"]
         else:
             user_id = username
+            response = query_user_profile_table_id(user_id)
+            if response["Count"] == 0:
+                return make_response(USER_DOES_NOT_EXIST, 404)
+
+        account_type = response["Items"][0]["AccountType"]
 
         # Retrieve hashed password from AuthTable for user-id.
-        auth_table_response = query_auth_table(user_id)
+        response = query_auth_table(user_id)
 
         # If no entries in Auth table found, return error.
-        if auth_table_response["Count"] == 0:
+        if response["Count"] == 0:
             return make_response(USER_DOES_NOT_EXIST, 404)
 
-        hashed_password = auth_table_response["Items"][0]["hashed_password"]
+        hashed_password = response["Items"][0]["hashed_password"]
 
         # Check the password hash vs the password from the auth headers.
         if check_password_hash(hashed_password, password):
@@ -140,29 +143,21 @@ def login():
                     "exp": datetime.datetime.utcnow()
                     + datetime.timedelta(minutes=TOKEN_EXPIRY_MINUTES),
                 },
-                app.config["SECRET_KEY"],
+                app.config["SECRET_KEY"][account_type],
             )
             # Create the response with the JWT in both cookies and X-Access-Token header.
             response = make_response(token)
             response.headers.add('Access-Control-Allow-Headers', "*")
             response.headers.add('Access-Control-Allow-Methods', "*")
             response.headers.add("Access-Control-Allow-Origin", "*")
-
+            response.headers["X-Access-Token"] = token
+            response.set_cookie("Access Token", token)
             return response, 200
+
         return make_response(
             COULD_NOT_VERIFY, 401, {
                 "WWW-Authenticate": 'Basic realm="Login Required"'}
         )
-        # Create the response with the JWT in both cookies and X-Access-Token header.
-        response = make_response(f"{USER_AUTHENTICATED} >> {account_type}")
-        response.headers["X-Access-Token"] = token
-        response.set_cookie("Access Token", token)
-
-        return response
-    return make_response(
-        COULD_NOT_VERIFY, 401, {
-            "WWW-Authenticate": 'Basic realm="Login Required"'}
-    )
 
 
 # Check if supplied login credential is an email.
@@ -171,14 +166,6 @@ def is_email(email_or_id):
         re.findall(
             "([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id)
     )
-
-
-def build_preflight_response():
-    response = make_response()
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add('Access-Control-Allow-Headers', "*")
-    response.headers.add('Access-Control-Allow-Methods', "*")
-    return response
 
 
 if __name__ == "__main__":
