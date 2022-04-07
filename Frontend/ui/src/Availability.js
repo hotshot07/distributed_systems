@@ -50,7 +50,12 @@ export default function Availability() {
 
     async function handleAvailabilityClick() {
         let idCounter = 0;
-        await axios.get(`http://${ENDPOINT}:${PORT}/view-athlete-availability/`.concat(athleteIdRef.current.value), { crossDomain: true })
+        const auth_and_cors_headers = {
+            'crossDomain': 'true',
+            "X-Access-Token": `${globalAuthData.token}`
+        }
+        await axios.get(`http://${ENDPOINT}:${PORT}/view-athlete-availability/`.concat(athleteIdRef.current.value),
+            { headers: auth_and_cors_headers })
             .then((response) => {
                 response.data.forEach((x, i) => { x['_id'] = idCounter++ });
                 console.log(response);
@@ -63,13 +68,17 @@ export default function Availability() {
 
     async function handleAvailabilityUpdate() {
         const utcTimeToUpdate = dateToUpdate.toISOString().split("T")[0] + " " + timeToUpdateRef.current.value + ":00:00"
-        await axios.post(`http://${ENDPOINT}:${PORT}/update-athlete-availability`, 
+        const auth_and_cors_headers = {
+            'crossDomain': 'true',
+            "X-Access-Token": `${globalAuthData.token}`
+        }
+        await axios.post(`http://${ENDPOINT}:${PORT}/update-athlete-availability`,
             [{
                 athlete_id: athleteIdUpdateRef.current.value,
                 datetimeUTC: utcTimeToUpdate,
                 location: locationUpdateRef.current.value,
                 location_country: countryUpdateRef.current.value
-            }], { crossDomain: true }).then((response) => {
+            }], { headers: auth_and_cors_headers }).then((response) => {
                 console.log(response);
             }).catch((err) => {
                 console.log(err);
@@ -86,7 +95,7 @@ export default function Availability() {
                 <CssBaseline />
                 <Stack direction="row" spacing={20} justifyContent="center" alignItems="center" divider={<Divider orientation="vertical" flexItem />}>
                     <Box sx={{ alignItems: 'center' }}>
-                        <Stack direction="column" spacing={2} sx= {{m:2}} justifyContent="center" alignItems="center">
+                        <Stack direction="column" spacing={2} sx={{ m: 2 }} justifyContent="center" alignItems="center">
                             <TextField id="standard-basic" label="Athelete ID" variant="standard" sx={{ m: 2 }} onKeyDown={keyPress} inputRef={athleteIdRef} />
                             <Button variant="outlined" sx={{ m: 2 }} onClick={handleAvailabilityClick}>Get Availability</Button>
                         </Stack>
