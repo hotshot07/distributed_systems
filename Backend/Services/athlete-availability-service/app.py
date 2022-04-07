@@ -1,5 +1,6 @@
 import logging
 from flask import Flask, request, make_response, jsonify
+from flask_cors import CORS
 import logging
 
 import services
@@ -9,11 +10,21 @@ from settings import *
 from auth import token_required, WADA, ATHLETE, ORCHESTRATOR, ADMIN
 
 app = Flask(__name__)
+CORS_ALLOW_ORIGIN = "*,*"
+CORS_EXPOSE_HEADERS = "*,*"
+CORS_ALLOW_HEADERS = "content-type,*"
+CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
+        allow_headers=CORS_ALLOW_HEADERS.split(","), 
+        expose_headers=CORS_EXPOSE_HEADERS.split(","),   
+        supports_credentials=True)
 
-#for request format see readme
-@app.route("/update-athlete-availability", methods=['GET','POST'])
+
+@app.route("/update-athlete-availability", methods=['OPTIONS','GET','POST'])
 @token_required([ADMIN, ATHLETE])
 def update_availability():
+    if (request.method == "OPTIONS"):
+        return build_preflight_response(), 200
+
     if request.method == 'POST':
         data = request.get_json()[0]
         availability_form = forms.convert_data_to_form(data)
@@ -53,7 +64,11 @@ def view_availability(athlete_id: str):
         try:
             if athlete_id:
                 resp = services.get_availability(athlete_id)
-                return make_response(jsonify(resp), 200)
+                response = make_response(jsonify(resp), 200)
+                response.headers.add('Access-Control-Allow-Headers', "*")
+                response.headers.add('Access-Control-Allow-Methods', "*")
+                response.headers.add("Access-Control-Allow-Origin", "*")
+                return response
             else: 
                 return make_response(NOT_ATHLETE_ID, 403)
         except Exception as e:
@@ -63,8 +78,15 @@ def view_availability(athlete_id: str):
         return make_response(NOT_ATHLETE_ID, 403) 
         
 
+def build_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(port=5000, debug=True)
 
 
 if __name__ != '__main__':

@@ -36,6 +36,7 @@ def token_required(Users: List):
         @wraps(f)
         def decorated(*args, **kwargs):
             token = None
+            print(request.headers)
             if "X-Access-Token" in request.headers:
                 token = request.headers["X-Access-Token"]
 

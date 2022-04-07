@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, make_response, jsonify, request
 from flask_cors import CORS
 from service import get_test_results
 from auth import token_required, WADA, ORCHESTRATOR, ADMIN
@@ -27,7 +27,7 @@ def view_results(country: str):
     :param country: Country whose test results are asked
     :return: json data
     """
-
+    print(request.__dict__)
     def validate_country(country):
         l_country = country.split()
         if len(l_country) > 0:
@@ -45,11 +45,19 @@ def view_results(country: str):
     if country in country_list:
         return get_test_results(country=country)
     else:
-        return f"Invalid country name {country}"
+        response = make_response(
+                jsonify(
+                    {"message": "Invalid country name {country}"}
+                ),
+                400,
+            )
+        response.headers["Content-Type"] = "application/json"
+        return response
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3000)
+
+if __name__ == '__main__':
+    app.run(debug=True, port=3000)
 
 if __name__ != "__main__":
     # if we are not running directly, we set the loggers
