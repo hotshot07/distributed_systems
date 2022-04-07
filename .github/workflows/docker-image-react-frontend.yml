@@ -2,7 +2,7 @@ name: Build Docker Image CI - React Frontend
 
 on:
   push:
-    branches: [main, react-development]
+    branches: [main]
     paths: [Frontend/ui/**]
 
 jobs:
