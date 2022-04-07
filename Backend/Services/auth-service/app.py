@@ -34,9 +34,9 @@ CORS_ALLOW_ORIGIN = "*,*"
 CORS_EXPOSE_HEADERS = "*,*"
 CORS_ALLOW_HEADERS = "content-type,*"
 CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
-        allow_headers=CORS_ALLOW_HEADERS.split(","), 
-        expose_headers=CORS_EXPOSE_HEADERS.split(","),   
-        supports_credentials=True)
+     allow_headers=CORS_ALLOW_HEADERS.split(","),
+     expose_headers=CORS_EXPOSE_HEADERS.split(","),
+     supports_credentials=True)
 
 
 app.config["SECRET_KEY"] = SECRET_KEYS
@@ -134,7 +134,7 @@ def login():
             return make_response(USER_DOES_NOT_EXIST, 404)
 
         hashed_password = response["Items"][0]["hashed_password"]
-
+        print(hashed_password)
         # Check the password hash vs the password from the auth headers.
         if check_password_hash(hashed_password, password):
             token = jwt.encode(
@@ -153,12 +153,12 @@ def login():
             response.headers["X-Access-Token"] = token
             response.set_cookie("Access Token", token)
             return response, 200
-
-        return make_response(
-            COULD_NOT_VERIFY, 401, {
-                "WWW-Authenticate": 'Basic realm="Login Required"'}
-        )
-
+        else:
+            print("hashed password comparison failed")
+            return make_response(
+                COULD_NOT_VERIFY, 401, {
+                    "WWW-Authenticate": 'Basic realm="Login Required"'}
+            )
 
 # Check if supplied login credential is an email.
 def is_email(email_or_id):
@@ -166,6 +166,14 @@ def is_email(email_or_id):
         re.findall(
             "([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", email_or_id)
     )
+
+
+def build_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
 
 
 if __name__ == "__main__":
