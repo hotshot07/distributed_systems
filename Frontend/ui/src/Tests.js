@@ -41,7 +41,7 @@ const Tests = () => {
     console.log(countryTextFieldValueRef.current.value);
 
     if (countryTextFieldValueRef) {
-      await axios.get(`http://${ENDPOINT}:${PORT}/view-test-results/`.concat(countryTextFieldValueRef.current.value), { crossDomain: true })
+      await axios.get(`http://${ENDPOINT}:${PORT}/view-test-results/`.concat(countryTextFieldValueRef.current.value), { crossDomain: true, "X-Access-Token": globalAuthData.token })
         .then((response) => {
           console.log(response)
           response.data.Items.forEach((x, i) => {
