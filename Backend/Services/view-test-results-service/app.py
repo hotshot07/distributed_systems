@@ -1,4 +1,4 @@
-from flask import Flask, make_response, jsonify
+from flask import Flask, make_response, jsonify, request
 from flask_cors import CORS
 from service import get_test_results
 from auth import token_required, WADA, ORCHESTRATOR, ADMIN
@@ -27,7 +27,7 @@ def view_results(country: str):
     :param country: Country whose test results are asked
     :return: json data
     """
-
+    print(request.__dict__)
     def validate_country(country):
         l_country = country.split()
         if len(l_country) > 0:
