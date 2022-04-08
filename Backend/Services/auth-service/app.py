@@ -110,7 +110,6 @@ def login():
         password = request.authorization.password
 
         username = username.strip()
-        app.logger.info(f"User {user_id} is attempting to login.")
         
         # Check if attempted login is with email. Query UserProfiles table for ID if email
         if is_email(username):
