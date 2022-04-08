@@ -1,0 +1,9 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service-deployment
+  annotations:
+    test.speedscale.com/scenarioid: 6b6239e4-13c1-41fc-964e-ba5f162cebf1
+    test.speedscale.com/testconfigid: standard
+    test.speedscale.com/cleanup: "true"
+    sidecar.speedscale.com/inject: "true"

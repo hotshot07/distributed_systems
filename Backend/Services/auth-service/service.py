@@ -1,5 +1,6 @@
 import boto3
 from boto3.dynamodb.conditions import Key
+import logging
 
 from settings import (
     AUTH,
@@ -20,7 +21,7 @@ resource = boto3.resource(
 AuthTable = resource.Table(AUTH)
 UserProfileTable = resource.Table(USER_PROFILE)
 
-
+logger = logging.getLogger(__name__)
 def query_user_profile_table_email(username):
     return UserProfileTable.query(
         IndexName="Email-index", KeyConditionExpression=Key("Email").eq(username)
@@ -28,12 +29,14 @@ def query_user_profile_table_email(username):
 
 
 def query_user_profile_table_id(user_id):
+    logger.info(f"User {user_id} is attempting to login.")
     return UserProfileTable.query(
         IndexName="Id-index", KeyConditionExpression=Key("Id").eq(user_id)
     )
 
 
 def query_auth_table(user_id):
+    logger.info(f"User {user_id} is attempting to login.")
     return AuthTable.query(
         IndexName="userid-index", KeyConditionExpression=Key("userid").eq(user_id)
     )
