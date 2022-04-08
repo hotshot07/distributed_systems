@@ -18,6 +18,13 @@ spec:
         - name: aas
           image: distributed07/athlete-availability-service:latest
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
           workingDir: /app
           command: ["/bin/sh", "-c"]
           args: ["gunicorn app:app --bind 0.0.0.0:5000 --workers 2 --log-level=debug"]

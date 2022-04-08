@@ -2,6 +2,7 @@ import requests
 import time 
 from concurrent.futures import ThreadPoolExecutor
 from collections import Counter
+import random 
 
 username = '91915068467'
 password = '535f61b0'
@@ -10,13 +11,13 @@ def get_token(i):
     start = time.time()
     response = requests.post('http://20.224.88.180:3000/login', auth=(username, password))
     end = time.time() - start
-    print(end)
+    print(response.status_code, end)
     return (response.status_code, end)
     
 def http_get_with_requests_parallel():
     results = []
-    executor = ThreadPoolExecutor(max_workers=10000)
-    for result in executor.map(get_token, range(10000)) :
+    executor = ThreadPoolExecutor(max_workers=1000)
+    for result in executor.map(get_token, range(100000)) :
         results.append(result)
     return Counter([x[0] for x in results]) , [x[1] for x in results]
 

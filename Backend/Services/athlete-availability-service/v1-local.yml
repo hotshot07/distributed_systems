@@ -17,6 +17,13 @@ spec:
       containers:
         - name: aas
           image: distributed07/athlete-availability-service:latest
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
           imagePullPolicy: Always
           workingDir: /app
           command: ["/bin/sh", "-c"]
