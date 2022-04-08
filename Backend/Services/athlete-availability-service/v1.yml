@@ -63,3 +63,16 @@ spec:
       targetPort: 5000
       protocol: TCP
       name: athlete-availability-service
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: athlete-availability-service-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: athlete-availability-service-deployment
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50

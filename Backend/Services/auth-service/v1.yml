@@ -63,3 +63,16 @@ spec:
       targetPort: 5000
       protocol: TCP
       name: auth-service
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: auth-service-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: auth-service-deployment
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50

@@ -62,3 +62,16 @@ spec:
     - port: 2000
       targetPort: 5000
       name: account-service
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: account-service-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: account-service-deployment
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
