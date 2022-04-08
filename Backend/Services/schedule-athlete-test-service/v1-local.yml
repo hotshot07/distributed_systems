@@ -27,7 +27,7 @@ spec:
               cpu: "500m"
           workingDir: /app
           command: ["/bin/sh", "-c"]
-          args: ["gunicorn app:app --bind 0.0.0.0:5000 --log-level=debug"]
+          args: ["gunicorn app:app --bind 0.0.0.0:5000 --workers 4 --log-level=debug"]
           ports:
             - containerPort: 5000
           env:
