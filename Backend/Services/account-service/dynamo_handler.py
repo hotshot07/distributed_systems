@@ -39,7 +39,7 @@ def update_user_if_exists(**kwargs):
                 'Organization': kwargs['Organization'],
                 'Id': kwargs['Id']
             },
-            ConditionExpression="Organization = :o and Id = :i and AccountType = :t and AccountStatus = :ias",
+            ConditionExpression="Organization = :o and Id = :i and AccountType = :t",
             UpdateExpression="set FirstName = :fn, LastName = :ln, Email = :e, PhoneNumber = :pn, Country = :c, AccountStatus = :s",
             ExpressionAttributeValues={
                 ':o': kwargs['Organization'],
