@@ -29,3 +29,7 @@ curl --location --request POST 'localhost:5000/upload-test-result' \
     "tester_id": "Tester2"
 }'
 ```
+View upcoming tests for a tester
+```
+curl --location --request GET 'localhost:5000/view-upcoming-tests/56297746115'
+```
