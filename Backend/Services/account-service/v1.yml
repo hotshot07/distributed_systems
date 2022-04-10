@@ -18,9 +18,16 @@ spec:
         - name: as
           image: distributed07/account-service:latest
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
           workingDir: /app
           command: ["/bin/sh", "-c"]
-          args: ["gunicorn app:app --bind 0.0.0.0:5000 --log-level=debug"]
+          args: ["gunicorn app:app --bind 0.0.0.0:5000 --workers 4 --log-level=debug"]
           ports:
             - containerPort: 5000
           env:
@@ -55,3 +62,16 @@ spec:
     - port: 2000
       targetPort: 5000
       name: account-service
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: account-service-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: account-service-deployment
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50

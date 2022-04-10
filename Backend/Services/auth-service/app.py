@@ -110,6 +110,7 @@ def login():
         password = request.authorization.password
 
         username = username.strip()
+        
         # Check if attempted login is with email. Query UserProfiles table for ID if email
         if is_email(username):
             response = query_user_profile_table_email(username)
@@ -122,21 +123,24 @@ def login():
             user_id = username
             response = query_user_profile_table_id(user_id)
             if response["Count"] == 0:
+                app.logger.error(f"User {user_id} does not exist.")
                 return make_response(USER_DOES_NOT_EXIST, 404)
 
         account_type = response["Items"][0]["AccountType"]
 
         # Retrieve hashed password from AuthTable for user-id.
         response = query_auth_table(user_id)
-
+        
         # If no entries in Auth table found, return error.
         if response["Count"] == 0:
             return make_response(USER_DOES_NOT_EXIST, 404)
 
         hashed_password = response["Items"][0]["hashed_password"]
-        print(hashed_password)
+        
+
         # Check the password hash vs the password from the auth headers.
         if check_password_hash(hashed_password, password):
+            
             token = jwt.encode(
                 {
                     "user": username,
@@ -154,7 +158,7 @@ def login():
             response.set_cookie("Access Token", token)
             return response, 200
         else:
-            print("hashed password comparison failed")
+            app.logger.error("hashed password comparison failed")
             return make_response(
                 COULD_NOT_VERIFY, 401, {
                     "WWW-Authenticate": 'Basic realm="Login Required"'}
