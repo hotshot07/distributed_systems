@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 from forms import CreateTestForm, UpdateTestResultForm
 from dynamodb_handler import update_test_result, create_test_using_transaction
@@ -7,7 +8,13 @@ from auth import token_required, WADA, ATHLETE, ORCHESTRATOR, TESTER, ADMIN
 import logging
 
 app = Flask(__name__)
-
+CORS_ALLOW_ORIGIN = "*,*"
+CORS_EXPOSE_HEADERS = "*,*"
+CORS_ALLOW_HEADERS = "content-type,*"
+CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
+        allow_headers=CORS_ALLOW_HEADERS.split(","), 
+        expose_headers=CORS_EXPOSE_HEADERS.split(","),   
+        supports_credentials=True)
 
 @app.route("/assign-athlete-test", methods=['GET', 'POST'])
 @token_required([ADMIN, ORCHESTRATOR])
