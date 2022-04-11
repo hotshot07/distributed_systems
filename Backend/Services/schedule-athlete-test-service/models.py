@@ -46,6 +46,7 @@ class AthleteTest:
                 datetime.timedelta(hours=1)
         test_datetime_as_dt = test_datetime_as_dt.replace(second=0, minute=0)
         self.test_datetime = test_datetime_as_dt.strftime("%Y-%m-%d %H:%M:%S")
+        self.test_datetime_epoch = int(test_datetime_as_dt.timestamp())
 
     def __init_availability_item(self, athlete_id, date):
         availability_item = self.fetch_athlete_availability(athlete_id, date)
@@ -138,6 +139,7 @@ class AthleteTest:
             }
             },
             'test_datetime': {'S': self.test_datetime},
+            'test_datetime_epoch': {'N': str(self.test_datetime_epoch)},
             'result': {'S': self.result},
             'assigned_on': {'S': self.assigned_on},
         }

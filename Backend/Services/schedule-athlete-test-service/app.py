@@ -1,7 +1,11 @@
 from flask import Flask, jsonify, request
 
 from forms import CreateTestForm, UpdateTestResultForm
-from dynamodb_handler import update_test_result, create_test_using_transaction
+from dynamodb_handler import (
+    update_test_result,
+    create_test_using_transaction,
+    get_upcoming_tests_for_tester
+)
 from settings import *
 from auth import token_required, WADA, ATHLETE, ORCHESTRATOR, TESTER, ADMIN
 import logging
@@ -10,19 +14,20 @@ app = Flask(__name__)
 
 
 @app.route("/assign-athlete-test", methods=['GET', 'POST'])
-@token_required([ADMIN, ORCHESTRATOR])
+@token_required([ADMIN, ORCHESTRATOR, WADA])
 def assign_test():
     if request.is_json and request.method == 'POST':
-        app.logger.info(f"Received request to assign a test: {request.get_json()}")
+        app.logger.info(
+            f"Received request to assign a test: {request.get_json()}")
         form = CreateTestForm(athlete_id=request.get_json().get('athlete_id'),
                               date=request.get_json().get('date'),
                               tester_id=request.get_json().get('tester_id'),
                               orchestrator_id=request.get_json().get('orchestrator_id'))
         if form.validate():
-            msg, http_code  = create_test_using_transaction(athlete_id=form.athlete_id,
-                                                orchestrator_id=form.orchestrator_id,
-                                                date=form.date,
-                                                tester_id=form.tester_id)
+            msg, http_code = create_test_using_transaction(athlete_id=form.athlete_id,
+                                                           orchestrator_id=form.orchestrator_id,
+                                                           date=form.date,
+                                                           tester_id=form.tester_id)
             if http_code == 200:
                 app.logger.info(f"Item added to test table: {msg}")
                 return jsonify({'message': ITEM_ADDED_SUCCESSFULLY, "additonal_info": msg}), http_code
@@ -43,7 +48,8 @@ def assign_test():
 @token_required([ADMIN, ORCHESTRATOR, TESTER])
 def upload_test_result():
     if request.method == 'POST' and request.is_json:
-        app.logger.info(f"Received request to upload a test result: {request.get_json()}")
+        app.logger.info(
+            f"Received request to upload a test result: {request.get_json()}")
         form = UpdateTestResultForm(request.get_json().get('test_datetime'), request.get_json(
         ).get('tester_id'), request.get_json().get('test_result'))
         if form.validate():
@@ -55,6 +61,17 @@ def upload_test_result():
             else:
                 app.logger.info(f"Failed to upload test result: {response}")
                 return jsonify({'message': ITEM_PARAMETERS_INVALID, 'dynamodb_msg': response}), http_code
+
+
+@app.route("/view-upcoming-tests/<string:tester>", methods=['GET', 'POST'])
+@token_required([ADMIN, ORCHESTRATOR, TESTER, WADA])
+def view_upcoming_tests(tester: str):
+    if tester:
+        response, http_code = get_upcoming_tests_for_tester(tester_id=tester)
+        if http_code == 200:
+            return jsonify({'message': response}), http_code
+        else:
+            return jsonify({'message': response}), http_code
 
 
 if __name__ != '__main__':
