@@ -83,9 +83,9 @@ def check_id(user_id, organization):
             return False
         else:
             profile = response['Items'][0]
-            if profile['AccountStatus'] == 'Active' and profile['AccountType'] == 'Orchestrator':
+            if profile['AccountStatus'] == 'Active' and (profile['AccountType'] == 'Orchestrator' or profile['AccountType'] == 'Admin'):
                 return True
-            logger.error(f"User {user_id} is not an active orchestrator")
+            logger.error(f"User {user_id} is not an active orchestrator or admin")
             return False
 
 
