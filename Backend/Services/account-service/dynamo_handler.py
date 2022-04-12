@@ -51,7 +51,6 @@ def update_user_if_exists(**kwargs):
                 ':c': kwargs['Country'],
                 ':t': kwargs['AccountType'],
                 ':s': 'Active',
-                ':ias': 'Inactive'
             },
             ReturnValues="UPDATED_NEW"
         )
@@ -65,7 +64,7 @@ def update_user_if_exists(**kwargs):
     return Response("Profile updated", 200)
 
 
-# check if id exists in database and its an orchestrator
+# check if id exists in database and its an orchestrator/admin account
 def check_id(user_id, organization):
     try:
         response = UserProfile.query(
