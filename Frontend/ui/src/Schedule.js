@@ -34,11 +34,13 @@ export default function Schedule() {
   const [globalAuthData, setGlobalAuthData] = useContext(TokenContext)
   const [tableData, setTableData] = useState([]);
 
+  // * Refs and state for creating tests.
   const athleteIdCreateTestRef = useRef('');
   const [dateTestCreate, setDateTestCreate] = useState(new Date());
   const orchestratorIdRef = useRef('');
   const testerIdRef = useRef('');
 
+  // * Refs and state for uploading test results.
   const [testDateToUpdate, setTestDateToUpdate] = useState(new Date());
   const testTimeToUploadRef = useRef('');
   const testerIdUploadRef = useRef('');
@@ -88,45 +90,78 @@ export default function Schedule() {
       <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center" style={{ minHeight: '40vh' }} >
         <CssBaseline />
         <Stack direction="row" spacing={20} justifyContent="center" alignItems="center" divider={<Divider orientation="vertical" flexItem />}>
-          <Box>
-            <Stack direction="column" spacing={2} justifyContent="center" alignItems="center">
-              <Box sx={{ alignItems: 'center', }}>
-                <Typography component="h1" variant="h5">Create Test</Typography>
-              </Box>
-
-              <TextField id="standard-basic" label="Athlete ID" variant="standard" inputRef={athleteIdCreateTestRef} />
-              <TextField id="standard-basic" label="Orchestrator ID" variant="standard" inputRef={orchestratorIdRef} />
-              <TextField id="standard-basic" label="Tester ID" variant="standard" inputRef={testerIdRef} />
-
-              <Box sx={{ alignItems: 'center', m: 2 }}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <DatePicker value={dateTestCreate} onChange={(newDate) => { setDateTestCreate(newDate) }} />
-                </MuiPickersUtilsProvider>
-              </Box>
-              <Button onClick={handleCreateTest} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}> Create Test </Button>
-            </Stack>
-          </Box>
-          <Box>
-            <Stack direction="column" spacing={2} justifyContent="center" alignItems="center">
-              <Box sx={{ alignItems: 'center', }}>
-                <Typography component="h1" variant="h5">Upload Test Result</Typography>
-              </Box>
-              <TextField id="standard-basic" label="Test Result" variant="standard" inputRef={testResultToUploadRef} />
-              <TextField id="standard-basic" label="Tester ID" variant="standard" inputRef={testerIdUploadRef} />
-              <Box sx={{ alignItems: 'center', m: 2 }}>
-                <TextField id="standard-basic" label="Hour (24hr)" variant="standard" inputRef={testTimeToUploadRef} type="number" defaultValue={12} />
-              </Box>
-
-              <Box sx={{ alignItems: 'center', m: 2 }}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <DatePicker value={dateTestCreate} onChange={(newDate) => { setTestDateToUpdate(newDate) }} />
-                </MuiPickersUtilsProvider>
-              </Box>
-              <Button onClick={handleUploadTestResult} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}> Uplaod Test </Button>
-            </Stack>
-          </Box>
+          {CreateTestResultForm()}
+          {UploadTestResultForm()}
         </Stack>
       </Grid>
     </div>
   )
+
+  function CreateTestResultForm() {
+    return <Box>
+      <Stack direction="column" spacing={2} justifyContent="center" alignItems="center">
+        {CreateTestHeader()}
+        {CreateTestTopForm()}
+        {CreateTestDatePicker()}
+        <Button onClick={handleCreateTest} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}> Create Test </Button>
+      </Stack>
+    </Box>;
+  }
+
+  function CreateTestHeader() {
+    return <Box sx={{ alignItems: 'center', }}>
+      <Typography component="h1" variant="h5">Create Test</Typography>
+    </Box>;
+  }
+
+  function CreateTestTopForm() {
+    return <>
+      <TextField id="standard-basic" label="Athlete ID" variant="standard" inputRef={athleteIdCreateTestRef} />
+      <TextField id="standard-basic" label="Orchestrator ID" variant="standard" inputRef={orchestratorIdRef} />
+      <TextField id="standard-basic" label="Tester ID" variant="standard" inputRef={testerIdRef} />
+    </>;
+  }
+
+  function UploadTestResultForm() {
+    return <Box>
+      <Stack direction="column" spacing={2} justifyContent="center" alignItems="center">
+        {UploadTestResultHeader()}
+        {UploadTestResultFormTop()}
+        {TestResultUploadDatePicker()}
+        <Button onClick={handleUploadTestResult} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}> Uplaod Test </Button>
+      </Stack>
+    </Box>;
+  }
+
+  function UploadTestResultHeader() {
+    return <Box sx={{ alignItems: 'center', }}>
+      <Typography component="h1" variant="h5">Upload Test Result</Typography>
+    </Box>;
+  }
+
+  function UploadTestResultFormTop() {
+    return <>
+      <TextField id="standard-basic" label="Test Result" variant="standard" inputRef={testResultToUploadRef} />
+      <TextField id="standard-basic" label="Tester ID" variant="standard" inputRef={testerIdUploadRef} />
+      <Box sx={{ alignItems: 'center', m: 2 }}>
+        <TextField id="standard-basic" label="Hour (24hr)" variant="standard" inputRef={testTimeToUploadRef} type="number" defaultValue={12} />
+      </Box>
+    </>;
+  }
+
+  function TestResultUploadDatePicker() {
+    return <Box sx={{ alignItems: 'center', m: 2 }}>
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <DatePicker value={dateTestCreate} onChange={(newDate) => { setTestDateToUpdate(newDate); }} />
+      </MuiPickersUtilsProvider>
+    </Box>;
+  }
+
+  function CreateTestDatePicker() {
+    return <Box sx={{ alignItems: 'center', m: 2 }}>
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <DatePicker value={dateTestCreate} onChange={(newDate) => { setDateTestCreate(newDate); }} />
+      </MuiPickersUtilsProvider>
+    </Box>;
+  }
 }

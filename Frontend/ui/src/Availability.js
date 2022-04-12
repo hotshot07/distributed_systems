@@ -47,7 +47,7 @@ export default function Availability() {
     const countryUpdateRef = useRef('');
     const locationUpdateRef = useRef('')
     const [dateToUpdate, setDateToUpdate] = useState(new Date());
-
+    
     async function handleAvailabilityClick() {
         let idCounter = 0;
         const auth_and_cors_headers = {
@@ -61,8 +61,8 @@ export default function Availability() {
                 console.log(response);
                 setTableData(response.data);
             })
-            .catch(() => {
-                console.log("Uh oh");
+            .catch((err) => {
+                console.log(`Request to ${ENDPOINT}:${PORT} failed with ${err}`);
             });
     }
 
