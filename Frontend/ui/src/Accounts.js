@@ -11,6 +11,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
+import Fade from '@mui/material/Fade';
+import Alert from '@mui/material/Alert';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -32,6 +34,8 @@ function Accounts() {
     const acNameOfAdoRef = useRef('');
     const acNumAccountsRef = useRef('');
     const [accountType, setAccountType] = React.useState('');
+    const [acFinished, setAcFinished] = React.useState(false);
+    const [newAccountData, setNewAccountData] = React.useState([{ Id: "", Password: "" }]);
 
     // *Account update refs.
     const updateIdRef = useRef('');
@@ -41,9 +45,11 @@ function Accounts() {
     const updateCountryRef = useRef('');
     const updateEmailRef = useRef('');
     const updatePhoneNumberRef = useRef('');
-    const [accountTypeUpdate, setAccountTypeUpdate] = React.useState('');
+    const [accountTypeUpdate, setAccountTypeUpdate] = React.useState(false);
+    const [updateSuccessful, setUpdateSuccessful] = React.useState(false);
 
-    async function handleCreateTest() {
+
+    async function handleCreateNAccounts() {
         const auth_and_cors_headers = {
             'crossDomain': 'true',
             "X-Access-Token": `${globalAuthData.token}`
@@ -51,12 +57,14 @@ function Accounts() {
 
         await axios.post(`http://${ENDPOINT}:${PORT}/create-n-accounts`,
             {
-                Id: acIdRef.currrent.value,
+                Id: acIdRef.current.value,
                 Organization: acNameOfAdoRef.current.value,
-                NumberOfAccounts: acNumAccountsRef.current.value,
+                NumberOfAccounts: Number(acNumAccountsRef.current.value),
                 AccountType: accountType
             }, { headers: auth_and_cors_headers }).then((response) => {
                 console.log(response);
+                setNewAccountData(response.data);
+                setAcFinished(true);
             }).catch((err) => {
                 console.log(err);
             });
@@ -79,6 +87,7 @@ function Accounts() {
                 PhoneNumber: updatePhoneNumberRef.current.value
             }, { headers: auth_and_cors_headers }).then((response) => {
                 console.log(response);
+                setUpdateSuccessful(true);
             }).catch((err) => {
                 console.log(err);
             });
@@ -107,7 +116,8 @@ function Accounts() {
                 {updateFormHeader()}
                 {updateForm()}
                 {DropDownUpdateAccountType()}
-                <Button type="submit" onClick={handleUpdateAccount} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Do Something Else</Button>
+                <Button type="submit" onClick={handleUpdateAccount} fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Update Account</Button>
+                <Fade in={updateSuccessful}><Alert severity="success">Account update for {acIdRef.current.value} successful</Alert></Fade>
             </Stack>
         </Card>;
     }
@@ -131,12 +141,30 @@ function Accounts() {
     }
 
     function CreateNAccountsCard() {
+        const newAccountDataList = []
+        newAccountData.forEach((accData) => {
+            newAccountDataList.push(
+                <Fade in={acFinished}>
+                    <Card sx={{ mt: 3, mb: 2 }}>
+                        <Divider></Divider>
+                        <Typography component="h1" variant="h6" sx={{ m: 1 }}>{accountType}</Typography>
+                        <Typography component="div" variant="body1" sx={{ m: 1 }}>Username</Typography>
+                        <Typography component="div" variant="body1" fontStyle='italic' sx={{ m: 1 }}>{accData.Id}</Typography>
+                        <Typography component="div" variant="body1" sx={{ m: 1 }}>Password</Typography>
+                        <Typography component="div" variant="body1" fontStyle='italic' sx={{ m: 1 }}>{accData.Password}</Typography>
+                    </Card>
+                </Fade>
+            )
+        })
+
         return <Card>
             <Stack direction="column" divider={<Divider orientation="vertical" flexItem />} spacing={2} sx={{ m: 2 }}>
                 {CreateAccountTitle()}
                 {CreateAccountTopForm()}
                 {DropDownAccountType()}
-                <Button type="submit" fullWidth onClick={handleCreateTest} variant="contained" sx={{ mt: 3, mb: 2 }}> Create Account</Button>
+                <Button type="submit" fullWidth onClick={handleCreateNAccounts} variant="contained" sx={{ mt: 3, mb: 2 }}> Create Account</Button>
+                <Fade in={acFinished}><Typography component="h1" variant="h5" sx={{ mt: 3, mb: 2 }}>Created Accounts</Typography></Fade>
+                <>{newAccountDataList}</>
             </Stack>
         </Card>;
     }
@@ -178,10 +206,10 @@ function Accounts() {
     function DropDownUpdateAccountType() {
         return <Box sx={{ minWidth: 120 }}>
             <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Account Type</InputLabel>
+                <InputLabel id="ath-simple-select-label">Account Type</InputLabel>
                 <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
+                    labelId="ath-simple-select-label"
+                    id="ath-simple-select"
                     value={accountTypeUpdate}
                     label="Account Type"
                     onChange={(event) => { setAccountTypeUpdate(event.target.value); }}
