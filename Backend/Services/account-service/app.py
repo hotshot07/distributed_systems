@@ -26,7 +26,7 @@ def index():
 
 
 @app.route("/update-athlete-account", methods=["GET", "POST"])
-# @token_required([ADMIN, ATHLETE])
+@token_required([ADMIN, ATHLETE])
 def update_athlete_account():
     if request.method == "POST":
 
@@ -44,7 +44,7 @@ def update_athlete_account():
 
 
 @app.route("/update-orch-account", methods=["GET", "POST"])
-# @token_required([ADMIN, ORCHESTRATOR])
+@token_required([ADMIN, ORCHESTRATOR])
 def update_orchestrator_account():
     if request.method == "POST":
 
@@ -63,7 +63,7 @@ def update_orchestrator_account():
 
 
 @app.route("/update-tester-account", methods=["GET", "POST"])
-# @token_required([ADMIN, TESTER])
+@token_required([ADMIN, TESTER])
 def update_tester_account():
     if request.method == "POST":
 
@@ -81,7 +81,7 @@ def update_tester_account():
 
 
 @app.route("/update-admin-account", methods=["GET", "POST"])
-# @token_required([ADMIN])
+@token_required([ADMIN])
 def update_admin_account():
     if request.method == "POST":
 
@@ -101,7 +101,7 @@ def update_admin_account():
 # helps create admin inactive accounts in auth and user profile
 # returns list
 @app.route("/admin-inactive-accounts", methods=["GET", "POST"])
-# @token_required([ADMIN])
+@token_required([ADMIN])
 def admin_inactive_accounts():
     if request.method == "POST":
         data = request.get_json()
@@ -138,7 +138,7 @@ def admin_inactive_accounts():
 
 
 @app.route("/create-n-accounts", methods=["GET", "POST"])
-# @token_required([ADMIN, ORCHESTRATOR])
+@token_required([ADMIN, ORCHESTRATOR])
 def get_n_accounts():
     if request.method == "POST":
         data = request.get_json()
