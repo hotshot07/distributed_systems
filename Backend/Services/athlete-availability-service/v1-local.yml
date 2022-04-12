@@ -17,10 +17,17 @@ spec:
       containers:
         - name: aas
           image: distributed07/athlete-availability-service:latest
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
           imagePullPolicy: Always
           workingDir: /app
           command: ["/bin/sh", "-c"]
-          args: ["gunicorn app:app --bind 0.0.0.0:5000 --log-level=debug"]
+          args: ["gunicorn app:app --bind 0.0.0.0:5000 --workers 4 --log-level=debug"]
           ports:
             - containerPort: 5000
           env:
