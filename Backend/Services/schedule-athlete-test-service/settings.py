@@ -21,6 +21,7 @@ COULD_NOT_CREATE_TEST_MODEL = "Failed to create test object from provided parame
 TRANSACTION_FAILED = "Transaction failed, check item parameters. Tester already assigned or availability slot has already been taken."
 ITEM_ADDED_SUCCESSFULLY = "Item added successfully!"
 ITEM_UPDATED_SUCCESSFULLY = "Item updated successfully!"
+NO_UPCOMING_TESTS = "No upcoming tests"
 
 FORM_TYPE_MUST_STRING = "Must be of type string (str)"
 COUNTRIES_DONT_MATCH = "Athlete and tester are not situated in the same country"

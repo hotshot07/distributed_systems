@@ -2,6 +2,7 @@ from urllib import response
 import boto3
 import botocore
 from boto3.dynamodb.conditions import Key
+import datetime
 from settings import *
 from models import *
 
@@ -22,6 +23,7 @@ client = boto3.client(
 AthleteTestTable = resource.Table(ATHELTE_TEST_TABLE)
 AthleteAvailabilityTable = resource.Table(ATHLETE_AVAILABILITY_TABLE)
 UserProfileTable = resource.Table(USER_PROFILE_TABLE)
+
 
 def create_test_using_transaction(athlete_id, date, tester_id, orchestrator_id):
     import traceback
@@ -66,6 +68,7 @@ def create_test_using_transaction(athlete_id, date, tester_id, orchestrator_id):
         return TRANSACTION_FAILED, 400
     return response, 200
 
+
 def update_test_result(tester_id, test_datetime, test_result):
     try:
         response = AthleteTestTable.update_item(
@@ -86,8 +89,24 @@ def update_test_result(tester_id, test_datetime, test_result):
     else:
         return response, 200
 
+
+def get_upcoming_tests_for_tester(tester_id : str):
+    now_epoch = int(datetime.datetime.now().timestamp())
+    try:
+        response = AthleteTestTable.query(
+            IndexName="tester_id-test_datetime_epoch-index",
+            KeyConditionExpression=Key('tester_id').eq(tester_id) & Key('test_datetime_epoch').gte(now_epoch)
+        )
+    except Exception as e:
+        return e.args, 404
+    else:
+        msg = response.get("Items") if response.get("Items") else NO_UPCOMING_TESTS
+        return msg, 200
+
+
 def check_user_exists(user_id, user_role):
-    response = UserProfileTable.query(IndexName="Id-index", KeyConditionExpression=Key('Id').eq(user_id))
+    response = UserProfileTable.query(
+        IndexName="Id-index", KeyConditionExpression=Key('Id').eq(user_id))
     if response.get("Count", 0) == 1:
         return response.get("Items")[0].get("AccountType") == user_role, response.get("Items")[0].get("Organization")
     return False, None

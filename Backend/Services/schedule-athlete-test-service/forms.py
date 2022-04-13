@@ -3,9 +3,9 @@ from settings import *
 from dynamodb_handler import check_user_exists
 
 class CreateTestForm:
-    def __init__(self, athlete_id, date, tester_id, orchestrator_id) -> None:
+    def __init__(self, athlete_id, date, orchestrator_id, tester_id=None) -> None:
         self.athlete_id = athlete_id
-        self.tester_id = tester_id
+        self.tester_id = tester_id #TODO automatically_assign_tester()
         self.date = date
         self.orchestrator_id = orchestrator_id
         self.validation_failures = {}
