@@ -34,6 +34,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: distributed07/react-frontend-service_dev:latest
+          tags: distributed07/react-frontend-service:latest
           platforms: linux/arm64,linux/amd64
           context: ./Frontend/ui
