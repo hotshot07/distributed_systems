@@ -39,7 +39,7 @@ def update_user_if_exists(**kwargs):
                 'Organization': kwargs['Organization'],
                 'Id': kwargs['Id']
             },
-            ConditionExpression="Organization = :o and Id = :i and AccountType = :t and AccountStatus = :ias",
+            ConditionExpression="Organization = :o and Id = :i and AccountType = :t",
             UpdateExpression="set FirstName = :fn, LastName = :ln, Email = :e, PhoneNumber = :pn, Country = :c, AccountStatus = :s",
             ExpressionAttributeValues={
                 ':o': kwargs['Organization'],
@@ -51,7 +51,6 @@ def update_user_if_exists(**kwargs):
                 ':c': kwargs['Country'],
                 ':t': kwargs['AccountType'],
                 ':s': 'Active',
-                ':ias': 'Inactive'
             },
             ReturnValues="UPDATED_NEW"
         )
@@ -65,7 +64,7 @@ def update_user_if_exists(**kwargs):
     return Response("Profile updated", 200)
 
 
-# check if id exists in database and its an orchestrator
+# check if id exists in database and its an orchestrator/admin account
 def check_id(user_id, organization):
     try:
         response = UserProfile.query(
@@ -83,9 +82,9 @@ def check_id(user_id, organization):
             return False
         else:
             profile = response['Items'][0]
-            if profile['AccountStatus'] == 'Active' and profile['AccountType'] == 'Orchestrator':
+            if profile['AccountStatus'] == 'Active' and (profile['AccountType'] == 'Orchestrator' or profile['AccountType'] == 'Admin'):
                 return True
-            logger.error(f"User {user_id} is not an active orchestrator")
+            logger.error(f"User {user_id} is not an active orchestrator or admin")
             return False
 
 
