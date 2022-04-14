@@ -35,7 +35,7 @@ export default function SignIn() {
     event.preventDefault();
 
     const basicAuthAsToken = Buffer.from(`${userRef.current.value}:${passRef.current.value}`).toString('base64');
-
+    
     const authorization = `Basic ${basicAuthAsToken}`
     
     axios.post(`http://${ENDPOINT}:${PORT}/login`, { crossDomain: true }, { headers: { "Authorization": authorization, crossDomain: true } })

@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from dynamo_handler import *
 from models import *
 import logging
@@ -6,7 +7,13 @@ from utils import get_id_and_passwords, error_message, validate_country
 from auth import *
 
 app = Flask(__name__)
-
+CORS_ALLOW_ORIGIN = "*,*"
+CORS_EXPOSE_HEADERS = "*,*"
+CORS_ALLOW_HEADERS = "content-type,*"
+CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
+        allow_headers=CORS_ALLOW_HEADERS.split(","), 
+        expose_headers=CORS_EXPOSE_HEADERS.split(","),   
+        supports_credentials=True)
 ###
 # update routes UPDATE an existing inactive account in user_profile
 # create routes CREATE a new inactive account in auth + user_profile
