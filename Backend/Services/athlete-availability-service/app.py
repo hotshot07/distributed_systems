@@ -19,7 +19,7 @@ CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
         supports_credentials=True)
 
 
-@app.route("/update-athlete-availability", methods=['OPTIONS','GET','POST'])
+@app.route("/update-athlete-availability", methods=['GET','POST'])
 @token_required([ADMIN, ATHLETE])
 def update_availability():
     if request.method == 'POST':
