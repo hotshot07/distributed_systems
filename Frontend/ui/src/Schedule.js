@@ -75,7 +75,7 @@ export default function Schedule() {
     await axios.post(`http://${ENDPOINT}:${PORT}/assign-athlete-test`,
       {
         athlete_id: athleteIdCreateTestRef.current.value,
-        datetimeUTC: createTestDate,
+        date: createTestDate,
         orchestrator_id: orchestratorIdRef.current.value,
         tester_id: testerIdRef.current.value
       }, { headers: auth_and_cors_headers }).then((response) => {
