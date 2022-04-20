@@ -6,6 +6,7 @@ from auth import token_required, WADA, ORCHESTRATOR, ADMIN
 import logging
 from flask_caching import Cache
 from utils import country_list
+from countries import country_dict
 
 
 app = Flask(__name__)
@@ -41,9 +42,12 @@ def view_results(country: str):
         return country
 
     country = validate_country(country)
+
+    # country_id = country_dict[country]
     
     if country in country_list:
-        return get_test_results(country=country)
+        country_id = str(country_dict[country])
+        return get_test_results(country=country_id)
     else:
         response = make_response(
                 jsonify(
