@@ -15,14 +15,13 @@ import { DataGrid } from '@mui/x-data-grid';
 import { CssBaseline } from '@mui/material';
 
 const columns = [
-  { field: 'athlete_name', headerName: 'Name' },
   { field: 'athlete_id', headerName: 'ID' },
   { field: 'assigned_on', headerName: 'Assigned' },
   { field: 'location', headerName: 'Location' },
   { field: 'result', headerName: 'Result' },
   { field: 'ochestrator_id', headerName: 'Orchestrator' },
   { field: 'test_datetime', headerName: 'Test Date' },
-  { field: 'tester_name', headerName: 'Tester' }
+  { field: 'tester_id', headerName: 'Tester' }
 ]
 
 const ENDPOINT = '20.224.88.180';
@@ -48,21 +47,23 @@ const Tests = () => {
       await axios.get(`http://${ENDPOINT}:${PORT}/view-test-results/`.concat(countryTextFieldValueRef.current.value),
         { headers: headers_to_go })
         .then((response) => {
-          console.log(response)
-          response.data.Items.forEach((x, i) => {
+          let returnedObjs = Object.values(response.data)
+          console.log(returnedObjs)
+          returnedObjs.forEach((x, i) => {console.log(x,i)})
+          returnedObjs.forEach((x, i) => {
             x['_id'] = idCounter++;
             x['ochestrator_id'] = x['orchestrator']['user_id'];
-            x['athlete_name'] = x['athlete']['first_name'] + " " + x['athlete']['second_name'];
+            // x['athlete_name'] = x['athlete']['first_name'] + " " + x['athlete']['second_name'];
             x['athlete_id'] = x['athlete']['user_id']
-            x['tester_name'] = x['tester']['first_name'] + " " + x['tester']['second_name']
+            // x['tester_name'] = x['tester']['first_name'] + " " + x['tester']['second_name']
           });
-          setTableData(response.data.Items)
+          setTableData(returnedObjs)
           setTableError(false)
         })
         .catch(function (error) {
           setTableError(true);
           console.log(globalAuthData);
-          console.log(error.toJSON());
+          console.log(error);
         });
     }
     else {
