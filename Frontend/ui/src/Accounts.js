@@ -20,8 +20,8 @@ import Typography from '@mui/material/Typography';
 import { CssBaseline } from '@mui/material';
 
 
-const ENDPOINT = 'localhost';
-const PORT = '5000';
+const ENDPOINT = '20.224.88.180';
+const PORT = '2000';
 
 
 function Accounts() {
