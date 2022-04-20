@@ -22,9 +22,6 @@ CORS(app, origins=CORS_ALLOW_ORIGIN.split(","),
 @app.route("/update-athlete-availability", methods=['OPTIONS','GET','POST'])
 @token_required([ADMIN, ATHLETE])
 def update_availability():
-    if (request.method == "OPTIONS"):
-        return build_preflight_response(), 200
-
     if request.method == 'POST':
         data = request.get_json()[0]
         availability_form = forms.convert_data_to_form(data)
