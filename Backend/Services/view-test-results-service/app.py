@@ -46,7 +46,7 @@ def view_results(country: str):
     # country_id = country_dict[country]
     
     if country in country_list:
-        country_id = country_dict[country]
+        country_id = str(country_dict[country])
         return get_test_results(country=country_id)
     else:
         response = make_response(
