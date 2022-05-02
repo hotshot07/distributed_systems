@@ -1,14 +1,32 @@
 
-# Distributed Systems: Project 2
+# Doping Testing Distributed System
 
-Code is structured like this:
+![example workflow](https://github.com/hotshot07/distributed_systems/blob/main/.github/workflows/docker-image-athlete-availability.yml/badge.svg)
+
+This project was completed as part of the Distributed Systems at Trinity College Dublin.
+The distributed service allows athletes to specify a time and place every day where they are available to be tested.
+Testers can then be assigned to these athletes to carry out the doping tests.
+
+![System Architecture of Distributed Service](Images/system-architecture.png)
+
+## Requirements
+- DynamoDB Tables
+- Kubernetes Cluster
+
+## Microservices
+A more detailed breakdown with READMEs for each service can be found:
 
 FrontEnd/
-...
 
-Backend/
---> Main App service
---> Services/
+--> ui
 
+Backend/Services
+--> account-service
 
-kubectl autoscale deployment <name-of-deployment> --cpu-percent=50 --min=1 --max=3
+--> athlete-availability-service
+
+--> auth-service
+
+--> schedule-athlete-test-service
+
+--> view-test-results-service
